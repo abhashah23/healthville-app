@@ -1,0 +1,25 @@
+<%- include('../partials/head', { narrow: true }) %>
+<% var W = content.tracker.weekly; %>
+<p><a href="/tracker/week/<%= n %>">Back to week <%= n %></a></p>
+<h1><%= time.formatDay(dayDate) %><br><span class="subhead"><%= W.severityQuestion %></span></h1>
+<p class="hint">Week <%= n %>, day <%= day + 1 %> of 7.</p>
+<% if (error) { %><div class="error-box" role="alert"><%= error %></div><% } %>
+<form class="card" method="post" action="/tracker/week/<%= n %>/day/<%= day + 1 %>/severity"
+      data-autosave data-draft-key="hv-w<%= n %>-d<%= day %>-severity-u<%= user.id %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <fieldset>
+    <legend><%= W.severityQuestion %></legend>
+    <div class="choices">
+      <% W.severityOptions.forEach(function (o) { %>
+        <input type="radio" id="sev-<%= o.key %>" name="severity" value="<%= o.key %>" <%= severity === o.key ? 'checked' : '' %>>
+        <label for="sev-<%= o.key %>"><%= o.label %></label>
+      <% }) %>
+    </div>
+  </fieldset>
+  <p class="save-status" role="status" aria-live="polite" data-save-status></p>
+  <div class="actions">
+    <button type="submit" class="wide">Save and go to next</button>
+    <button type="submit" class="secondary wide" name="go" value="week">Save and see the whole week</button>
+  </div>
+</form>
+<%- include('../partials/foot', { scripts: ['/js/autosave.js'] }) %>

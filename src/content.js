@@ -37,8 +37,9 @@ module.exports = {
     // Column heading on the handout: "What I Was Doing".
     activityLabel: 'What I was doing',
     notesLabel: 'Notes or patterns (optional)',
-    // Asked once a week, together with the reflection. Wording and options
-    // follow the LMS screenshot (Abha: "follow the screenshots").
+    // From the LMS screenshot (Abha: "follow the screenshots").
+    // Severity level is asked every day. The other two are asked once a week,
+    // at the top of the week.
     weekly: {
       tiredQuestion: 'How tired have you felt over the last week?',
       tiredLow: '1: No fatigue',

@@ -36,15 +36,19 @@ async function getOrCreateWeekRow(participantId, n) {
   return getWeekRow(participantId, n);
 }
 
-// The full week: { row, entries: { 'day-time': entry } }. row may be null.
+// The full week: { row, entries: { 'day-time': entry }, severity: { day: key } }.
+// row may be null.
 async function getWeek(participantId, n) {
   const row = await getWeekRow(participantId, n);
   const entries = {};
+  const severity = {};
   if (row) {
     const list = await db.many('SELECT * FROM tracker_entries WHERE week_id = $1', [row.id]);
     for (const e of list) entries[`${e.day_index}-${e.time_of_day}`] = e;
+    const days = await db.many('SELECT * FROM tracker_days WHERE week_id = $1', [row.id]);
+    for (const d of days) severity[d.day_index] = d.severity;
   }
-  return { row, entries };
+  return { row, entries, severity };
 }
 
 function slotComplete(entry) {
@@ -55,9 +59,14 @@ function slotStarted(entry) {
   return Boolean(entry) && (entry.score !== null || entry.activity !== '' || entry.notes !== '');
 }
 
-// What still needs filling in before the week can be submitted.
+// What still needs filling in before the week can be submitted, in the order
+// people fill it in: the two weekly questions, then each day (three times of
+// day and the severity level), then the reflection.
 function missingItems(week) {
   const missing = [];
+  const r = week.row;
+  if (!r || r.tired_score === null) missing.push({ kind: 'weekly', key: 'tired' });
+  if (!r || r.pattern.trim() === '') missing.push({ kind: 'weekly', key: 'pattern' });
   for (let d = 0; d < 7; d++) {
     for (const t of TIMES) {
       const e = week.entries[`${d}-${t}`];
@@ -66,11 +75,8 @@ function missingItems(week) {
       if (!e || e.activity.trim() === '') parts.push('activity');
       if (parts.length) missing.push({ kind: 'slot', day: d, time: t, parts });
     }
+    if (!week.severity[d]) missing.push({ kind: 'severity', day: d });
   }
-  const r = week.row;
-  if (!r || r.tired_score === null) missing.push({ kind: 'weekly', key: 'tired' });
-  if (!r || r.severity === null) missing.push({ kind: 'weekly', key: 'severity' });
-  if (!r || r.pattern.trim() === '') missing.push({ kind: 'weekly', key: 'pattern' });
   for (const key of REFLECTIONS) {
     if (!r || r[key].trim() === '') missing.push({ kind: 'reflection', key });
   }
@@ -100,26 +106,45 @@ async function saveSlot(participantId, n, day, timeOfDay, input) {
   return null;
 }
 
-// Saves the end-of-week questions: how tired, severity, fatigue pattern and
-// the three reflection questions. Anything not answered yet is left empty.
-async function saveReflections(participantId, n, input) {
+// Saves the two weekly questions: how tired over the last week and the
+// fatigue pattern. Anything not answered yet is left empty.
+async function saveWeekly(participantId, n, input) {
   let tired = null;
   if (input.tired_score !== undefined && input.tired_score !== null && input.tired_score !== '') {
     tired = Number(input.tired_score);
     if (!Number.isInteger(tired) || tired < 1 || tired > 10) return 'Please choose a number from 1 to 10.';
   }
-  let severity = null;
-  if (input.severity) {
-    if (!SEVERITIES.includes(input.severity)) return 'Please choose a severity level.';
-    severity = input.severity;
-  }
   const row = await getOrCreateWeekRow(participantId, n);
   if (row.submitted_at) return 'This week has already been submitted.';
   await db.query(
-    `UPDATE tracker_weeks SET tired_score = $2, severity = $3, pattern = $4,
-       reflection_most_fatigued = $5, reflection_biggest_impact = $6,
-       reflection_one_change = $7, updated_at = now() WHERE id = $1`,
-    [row.id, tired, severity, clean(input.pattern, LIMITS.pattern), ...REFLECTIONS.map((k) => clean(input[k], LIMITS.reflection))]
+    'UPDATE tracker_weeks SET tired_score = $2, pattern = $3, updated_at = now() WHERE id = $1',
+    [row.id, tired, clean(input.pattern, LIMITS.pattern)]
+  );
+  return null;
+}
+
+// Saves the severity level for one day.
+async function saveSeverity(participantId, n, day, severity) {
+  if (!(day >= 0 && day <= 6)) return 'Unknown day.';
+  if (!SEVERITIES.includes(severity)) return 'Please choose a severity level.';
+  const row = await getOrCreateWeekRow(participantId, n);
+  if (row.submitted_at) return 'This week has already been submitted.';
+  await db.query(
+    `INSERT INTO tracker_days (week_id, day_index, severity) VALUES ($1, $2, $3)
+     ON CONFLICT (week_id, day_index) DO UPDATE SET severity = EXCLUDED.severity, updated_at = now()`,
+    [row.id, day, severity]
+  );
+  await db.query('UPDATE tracker_weeks SET updated_at = now() WHERE id = $1', [row.id]);
+  return null;
+}
+
+async function saveReflections(participantId, n, input) {
+  const row = await getOrCreateWeekRow(participantId, n);
+  if (row.submitted_at) return 'This week has already been submitted.';
+  await db.query(
+    `UPDATE tracker_weeks SET reflection_most_fatigued = $2, reflection_biggest_impact = $3,
+       reflection_one_change = $4, updated_at = now() WHERE id = $1`,
+    [row.id, ...REFLECTIONS.map((k) => clean(input[k], LIMITS.reflection))]
   );
   return null;
 }
@@ -146,7 +171,7 @@ function weekStatus(state, row, startedCount) {
   if (state === 'upcoming') return 'upcoming';
   if (state === 'closed') return 'not_submitted';
   // Only weekly tracker rows have these fields; other trackers pass their own rows.
-  const answered = Boolean(row) && (row.tired_score != null || row.severity != null || Boolean(row.pattern) || REFLECTIONS.some((k) => Boolean(row[k])));
+  const answered = Boolean(row) && (row.tired_score != null || Boolean(row.pattern) || REFLECTIONS.some((k) => Boolean(row[k])));
   return startedCount > 0 || answered ? 'in_progress' : 'not_started';
 }
 
@@ -246,6 +271,9 @@ module.exports = {
   completedSlots,
   saveSlot,
   saveReflections,
+  saveWeekly,
+  saveSeverity,
+  SEVERITIES,
   submitWeek,
   weekStatus,
   severityLabel,

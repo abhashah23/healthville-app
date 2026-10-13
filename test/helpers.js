@@ -57,10 +57,9 @@ async function fillWeek(userId, n, { reflections = true } = {}) {
     }
   }
   if (reflections) {
+    await tracker.saveWeekly(userId, n, { tired_score: 6, pattern: 'Worst in the afternoon' });
+    for (let d = 0; d < 7; d++) await tracker.saveSeverity(userId, n, d, 'moderate');
     await tracker.saveReflections(userId, n, {
-      tired_score: 6,
-      severity: 'moderate',
-      pattern: 'Worst in the afternoon',
       reflection_most_fatigued: 'a',
       reflection_biggest_impact: 'b',
       reflection_one_change: 'c',

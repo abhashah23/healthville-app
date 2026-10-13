@@ -39,24 +39,37 @@ router.param('n', (req, res, next, value) => {
   next();
 });
 
-function slotOrder() {
+// The daily steps in order: for each day, morning, afternoon, evening, then
+// the severity level for that day.
+function stepOrder() {
   const order = [];
-  for (let d = 0; d < 7; d++) for (const t of tracker.TIMES) order.push({ day: d, time: t });
+  for (let d = 0; d < 7; d++) {
+    for (const t of tracker.TIMES) order.push({ day: d, time: t });
+    order.push({ day: d, time: 'severity' });
+  }
   return order;
 }
 
+function stepDone(week, s) {
+  return s.time === 'severity' ? Boolean(week.severity[s.day]) : tracker.slotComplete(week.entries[`${s.day}-${s.time}`]);
+}
+
 function firstIncompleteSlot(week) {
-  return slotOrder().find((s) => !tracker.slotComplete(week.entries[`${s.day}-${s.time}`])) || null;
+  return stepOrder().find((s) => !stepDone(week, s)) || null;
 }
 
 function slotUrl(n, s) {
-  return `/tracker/week/${n}/day/${s.day + 1}/${s.time}`;
+  return s.time === 'severity' ? `/tracker/week/${n}/day/${s.day + 1}/severity` : `/tracker/week/${n}/day/${s.day + 1}/${s.time}`;
 }
 
-function nextUrl(n, day, timeOfDay) {
-  const order = slotOrder();
-  const i = order.findIndex((s) => s.day === day && s.time === timeOfDay);
+function nextUrl(n, day, step) {
+  const order = stepOrder();
+  const i = order.findIndex((s) => s.day === day && s.time === step);
   return i + 1 < order.length ? slotUrl(n, order[i + 1]) : `/tracker/week/${n}/reflections`;
+}
+
+function weeklyMissing(week) {
+  return !week.row || week.row.tired_score === null || week.row.pattern.trim() === '';
 }
 
 function canEdit(req, week) {
@@ -91,6 +104,8 @@ router.get('/', async (req, res, next) => {
       const slot = firstIncompleteSlot(week);
       continueUrl = slot ? slotUrl(current.n, slot) : `/tracker/week/${current.n}/reflections`;
       if (slot === null && tracker.missingItems(week).length === 0) continueUrl = `/tracker/week/${current.n}/review`;
+      // The two weekly questions come first, at the top of the week.
+      if (weeklyMissing(week)) continueUrl = `/tracker/week/${current.n}#weekly-questions`;
     }
     const sp = { state: spoons.state(req.group) };
     const ebData = await energy.getSheet(req.user.id);
@@ -140,6 +155,56 @@ router.get('/week/:n', async (req, res, next) => {
       completed: tracker.completedSlots(week),
       missing: tracker.missingItems(week),
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+function parseDayParam(req) {
+  const day = Number(req.params.day) - 1;
+  return Number.isInteger(day) && day >= 0 && day <= 6 ? day : null;
+}
+
+router.get('/week/:n/day/:day/severity', async (req, res, next) => {
+  try {
+    const n = req.weekNumber;
+    const day = parseDayParam(req);
+    if (day === null) return res.status(404).render('error', { title: 'Page not found', message: 'We could not find that page.' });
+    const week = await tracker.getWeek(req.user.id, n);
+    if (!canEdit(req, week)) return res.redirect(`/tracker/week/${n}`);
+    const days = time.weekDays(req.group.session1_date, n);
+    res.render('participant/severity', {
+      title: `Week ${n}, ${time.formatDay(days[day])}, severity level`,
+      n,
+      day,
+      dayDate: days[day],
+      severity: week.severity[day] || null,
+      error: null,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/week/:n/day/:day/severity', async (req, res, next) => {
+  try {
+    const n = req.weekNumber;
+    const day = parseDayParam(req);
+    const wantsJson = req.is('application/json');
+    const week = await tracker.getWeek(req.user.id, n);
+    let error = null;
+    if (day === null) error = 'Unknown day.';
+    else if (!canEdit(req, week)) error = 'This week can no longer be changed.';
+    else error = await tracker.saveSeverity(req.user.id, n, day, req.body.severity);
+    if (wantsJson) return res.status(error ? 400 : 200).json({ ok: !error, error });
+    if (day === null || !canEdit(req, week)) return res.redirect(`/tracker/week/${n}`);
+    if (error) {
+      const days = time.weekDays(req.group.session1_date, n);
+      return res.status(400).render('participant/severity', {
+        title: `Week ${n}, severity level`, n, day, dayDate: days[day], severity: null, error,
+      });
+    }
+    res.redirect(req.body.go === 'week' ? `/tracker/week/${n}` : nextUrl(n, day, 'severity'));
   } catch (err) {
     next(err);
   }
@@ -207,6 +272,22 @@ router.post('/week/:n/day/:day/:time', async (req, res, next) => {
       });
     }
     res.redirect(req.body.go === 'week' ? `/tracker/week/${n}` : nextUrl(n, slot.day, slot.timeOfDay));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/week/:n/weekly', async (req, res, next) => {
+  try {
+    const n = req.weekNumber;
+    const wantsJson = req.is('application/json');
+    const week = await tracker.getWeek(req.user.id, n);
+    const error = canEdit(req, week) ? await tracker.saveWeekly(req.user.id, n, req.body) : 'This week can no longer be changed.';
+    if (wantsJson) return res.status(error ? 400 : 200).json({ ok: !error, error });
+    if (error || req.body.go !== 'next') return res.redirect(`/tracker/week/${n}`);
+    const updated = await tracker.getWeek(req.user.id, n);
+    const step = firstIncompleteSlot(updated);
+    res.redirect(step ? slotUrl(n, step) : `/tracker/week/${n}/reflections`);
   } catch (err) {
     next(err);
   }

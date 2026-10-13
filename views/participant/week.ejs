@@ -11,6 +11,38 @@
   <p><span class="chip not_submitted">Closed</span> This week closed before it was submitted. You can still see what you entered.</p>
 <% } %>
 
+<% var W = content.tracker.weekly; var wr = week.row || { tired_score: null, pattern: '' }; var sevLabel = function (k) { var o = W.severityOptions.filter(function (x) { return x.key === k; })[0]; return o ? o.label : ''; }; %>
+<section class="card" id="weekly-questions" aria-labelledby="wq-title">
+  <h2 id="wq-title" class="visually-hidden">Weekly questions</h2>
+  <% if (editable) { %>
+  <form method="post" action="/tracker/week/<%= n %>/weekly" data-autosave data-draft-key="hv-w<%= n %>-weekly-u<%= user.id %>">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <fieldset aria-describedby="tired-hint">
+      <legend><%= W.tiredQuestion %></legend>
+      <p class="hint" id="tired-hint"><%= W.tiredLow %>. <%= W.tiredHigh %>.</p>
+      <div class="scores ten">
+        <% for (var t = 1; t <= 10; t++) { %>
+          <input type="radio" id="tired-<%= t %>" name="tired_score" value="<%= t %>" <%= wr.tired_score === t ? 'checked' : '' %>>
+          <label for="tired-<%= t %>"><%= t %></label>
+        <% } %>
+      </div>
+    </fieldset>
+    <div class="field">
+      <label for="pattern"><%= W.patternQuestion %></label>
+      <ul class="prompts" id="pattern-prompts"><% W.patternPrompts.forEach(function (p) { %><li><%= p %></li><% }) %></ul>
+      <textarea id="pattern" name="pattern" class="tall" maxlength="2000" aria-describedby="pattern-prompts"><%= wr.pattern %></textarea>
+    </div>
+    <p class="save-status" role="status" aria-live="polite" data-save-status></p>
+    <div class="actions">
+      <button type="submit" class="wide" name="go" value="next">Save and go to the days</button>
+    </div>
+  </form>
+  <% } else { %>
+    <p><strong><%= W.tiredQuestion %></strong><br><%= wr.tired_score !== null ? wr.tired_score + ' out of 10' : 'Not answered' %></p>
+    <p><strong><%= W.patternQuestion %></strong><br><span class="pre"><%= wr.pattern || 'Not answered' %></span></p>
+  <% } %>
+</section>
+
 <section class="card" aria-labelledby="days-title">
   <h2 id="days-title" class="visually-hidden">Days</h2>
   <ul class="day-list">
@@ -37,6 +69,12 @@
         <% if (editable) { %></a><% } else { %></div><% } %>
       <% }) %>
       </div>
+      <% var sv = week.severity[i]; %>
+      <% if (editable) { %>
+        <a class="slot sev-slot <%= sv ? 'done' : '' %>" href="/tracker/week/<%= n %>/day/<%= i + 1 %>/severity"><span><%= W.severityQuestion %></span> <span class="value"><%= sv ? sevLabel(sv) : 'Not answered yet' %></span></a>
+      <% } else { %>
+        <p class="hint"><strong><%= W.severityQuestion %>:</strong> <%= sv ? sevLabel(sv) : 'Not answered' %></p>
+      <% } %>
       <% if (!editable) { content.tracker.timesOfDay.forEach(function (t) { var e = week.entries[i + '-' + t.key]; if (e && (e.activity || e.notes)) { %>
         <p class="hint"><strong><%= t.label %>:</strong> <%= e.activity %><% if (e.notes) { %>. Notes: <%= e.notes %><% } %></p>
       <% } }) } %>
@@ -47,14 +85,10 @@
 
 <section class="card" aria-labelledby="reflect-title">
   <h2 id="reflect-title">Weekly reflection</h2>
-  <% var W = content.tracker.weekly; var wr = week.row; var na = editable ? 'Not answered yet' : 'Not answered'; %>
-  <p><strong><%= W.tiredQuestion %></strong><br><%= wr && wr.tired_score !== null ? wr.tired_score + ' out of 10' : na %></p>
-  <p><strong><%= W.severityQuestion %></strong><br><%= wr && wr.severity ? W.severityOptions.filter(function (o) { return o.key === wr.severity; })[0].label : na %></p>
-  <p><strong><%= W.patternQuestion %></strong><br><span class="pre"><%= wr && wr.pattern ? wr.pattern : na %></span></p>
   <% content.tracker.reflections.forEach(function (r) { var v = week.row ? week.row[r.key] : ''; %>
     <p><strong><%= r.label %></strong><br><%= v ? v : (editable ? 'Not answered yet' : 'Not answered') %></p>
   <% }) %>
-  <% if (editable) { %><a class="button secondary" href="/tracker/week/<%= n %>/reflections">Answer the weekly questions</a><% } %>
+  <% if (editable) { %><a class="button secondary" href="/tracker/week/<%= n %>/reflections">Answer the reflection questions</a><% } %>
 </section>
 
 <% if (editable) { %>
@@ -62,4 +96,4 @@
     <a class="button wide" href="/tracker/week/<%= n %>/review">Review and submit this week</a>
   </div>
 <% } %>
-<%- include('../partials/foot', { scripts: ['/js/localtime.js'] }) %>
+<%- include('../partials/foot', { scripts: editable ? ['/js/autosave.js', '/js/localtime.js'] : ['/js/localtime.js'] }) %>

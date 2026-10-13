@@ -76,9 +76,17 @@ async function main() {
   const all = await db.many(`SELECT id FROM users WHERE group_id = $1 AND role = 'participant' ORDER BY id`, [group.id]);
   // Weekly questions for the submitted weeks.
   await db.query(
-    `UPDATE tracker_weeks w SET tired_score = 5 + (w.participant_id % 3), severity = (ARRAY['moderate','severe','mild'])[1 + w.participant_id % 3],
+    `UPDATE tracker_weeks w SET tired_score = 5 + (w.participant_id % 3),
        pattern = 'Worst in the late afternoon. Better after a short rest. Busy days make it worse. It stops me gardening, seeing friends and cooking.'
      FROM users u WHERE u.id = w.participant_id AND u.group_id = $1 AND w.submitted_at IS NOT NULL`,
+    [group.id]
+  );
+  // Severity level for each day that has entries.
+  await db.query(
+    `INSERT INTO tracker_days (week_id, day_index, severity)
+     SELECT DISTINCT e.week_id, e.day_index, (ARRAY['moderate','mild','severe','very_mild'])[1 + (e.day_index % 4)]
+     FROM tracker_entries e JOIN tracker_weeks w ON w.id = e.week_id JOIN users u ON u.id = w.participant_id
+     WHERE u.group_id = $1 AND (w.submitted_at IS NOT NULL OR e.time_of_day = 'evening')`,
     [group.id]
   );
 

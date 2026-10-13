@@ -18,10 +18,12 @@ real participants.** See "Needs approval" below.
 - Answer three weekly reflection questions, then submit the week once.
 - See their past weeks and a chart of their own averages.
 
-**Weekly questions** (every week, with the weekly reflection, following the
-LMS screenshot): How tired have you felt over the last week? (1 to 10), Your
-severity level (Severe, Moderate, Mild, Very mild, None), Your Fatigue
-Pattern (one box). All required before the week is submitted.
+**Questions from the LMS screenshot**, part of the Weekly Fatigue Tracker:
+- At the top of every week: How tired have you felt over the last week?
+  (1 to 10) and Your Fatigue Pattern (one box).
+- Every day, right after the evening entry: Your severity level (Severe,
+  Moderate, Mild, Very mild, None).
+- All required before the week is submitted.
 
 **Spoon Tracker** ("Today's Spoons" on the My Spoons handout):
 - Just 12 spoons for today. Tap a spoon to cross it off; tap again to undo.
@@ -137,10 +139,12 @@ To deploy, see [docs/DEPLOY.md](docs/DEPLOY.md).
 10. Try it with your phone's text size turned up, and with a screen reader
     (VoiceOver or TalkBack) if you can.
 
-**Weekly questions (as a participant)**
-1. Open the week's reflection. Answer how tired, severity level and fatigue
-   pattern, then the three reflection questions.
-2. Try to submit with one left empty. The review page should list it.
+**Weekly questions and daily severity (as a participant)**
+1. Tap "Start this week". The page opens at the two weekly questions at the
+   top. Answer them and tap "Save and go to the days".
+2. After each evening entry, the next screen asks for that day's severity
+   level. Check each day on the week page shows it.
+3. Try to submit with something missing. The review page should list it.
 
 **Spoon Tracker (as a participant, from the day of Session 2)**
 1. On the home page, tap "Cross off today's spoons".

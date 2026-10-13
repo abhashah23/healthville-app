@@ -51,6 +51,9 @@
 <details class="card week" id="week-<%= w.n %>" <%= idx === shown.length - 1 ? 'open' : '' %>>
   <summary>Week <%= w.n %>&nbsp;<%- include('../partials/status', { status: w.status }) %></summary>
   <% if (w.status === 'submitted') { %><p class="hint">Submitted <%= time.formatTimestamp(w.week.row.submitted_at) %>.</p><% } else { %><p class="hint">Not submitted. This is what was entered before the week closed.</p><% } %>
+  <% var W = content.tracker.weekly; var wr = w.week.row || {}; var sevLabel = function (k) { var o = W.severityOptions.filter(function (x) { return x.key === k; })[0]; return o ? o.label : ''; }; %>
+  <p><strong><%= W.tiredQuestion %></strong><br><%= wr.tired_score != null ? wr.tired_score + ' out of 10' : 'Not answered' %></p>
+  <p><strong><%= W.patternQuestion %></strong><br><span class="pre"><%= wr.pattern || 'Not answered' %></span></p>
   <% w.days.forEach(function (d, i) { %>
     <div class="entry-day">
       <h3><%= time.formatDay(d) %></h3>
@@ -66,13 +69,13 @@
           </div>
         </div>
       <% }) %>
+      <div class="entry-row">
+        <div><strong><%= W.severityQuestion %></strong></div>
+        <div><%= w.week.severity[i] ? sevLabel(w.week.severity[i]) : '' %><% if (!w.week.severity[i]) { %><span class="empty">Not answered</span><% } %></div>
+      </div>
     </div>
   <% }) %>
   <h3>Weekly reflection</h3>
-  <% var W = content.tracker.weekly; var wr = w.week.row || {}; %>
-  <p><strong><%= W.tiredQuestion %></strong><br><%= wr.tired_score != null ? wr.tired_score + ' out of 10' : 'Not answered' %></p>
-  <p><strong><%= W.severityQuestion %></strong><br><%= wr.severity ? W.severityOptions.filter(function (o) { return o.key === wr.severity; })[0].label : 'Not answered' %></p>
-  <p><strong><%= W.patternQuestion %></strong><br><span class="pre"><%= wr.pattern || 'Not answered' %></span></p>
   <% content.tracker.reflections.forEach(function (r) { var v = w.week.row ? w.week.row[r.key] : ''; %>
     <p><strong><%= r.label %></strong><br><% if (v) { %><%= v %><% } else { %><span class="empty">Not answered</span><% } %></p>
   <% }) %>

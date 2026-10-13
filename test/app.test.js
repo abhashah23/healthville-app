@@ -69,22 +69,35 @@ test('participant: autosave, required fields, submit once, no changes after', as
   const review = await agent.get('/tracker/week/1/review');
   assert.match(review.text, /what you were doing/);
 
-  // All slots but no weekly questions: still not allowed.
+  // All slots but no weekly questions, severity or reflection: still not allowed.
   await h.fillWeek(p.id, 1, { reflections: false });
   const gaps = await tracker.submitWeek(p.id, 1);
-  assert.deepStrictEqual(gaps.map((g) => g.key), ['tired', 'severity', 'pattern', 'reflection_most_fatigued', 'reflection_biggest_impact', 'reflection_one_change']);
+  assert.deepStrictEqual(gaps.map((g) => g.key || g.kind), ['tired', 'pattern', 'severity', 'severity', 'severity', 'severity', 'severity', 'severity', 'severity', 'reflection_most_fatigued', 'reflection_biggest_impact', 'reflection_one_change']);
   const reviewAll = await agent.get('/tracker/week/1/review');
   assert.match(reviewAll.text, /How tired have you felt over the last week\?/);
+  assert.match(reviewAll.text, /your severity level/);
 
-  // The weekly questions follow the screenshot and save as you go.
-  const reflect = await agent.get('/tracker/week/1/reflections');
-  assert.match(reflect.text, /1: No fatigue/);
-  assert.match(reflect.text, /Very mild/);
-  assert.match(reflect.text, /Three things fatigue prevents me from doing/);
-  const partial = await agent.post('/tracker/week/1/reflections').set('X-CSRF-Token', csrf).send({ tired_score: 7, severity: 'very_mild' });
+  // The two weekly questions are at the top of the week page.
+  const weekPage = await agent.get('/tracker/week/1');
+  assert.match(weekPage.text, /id="weekly-questions"/);
+  assert.ok(weekPage.text.indexOf('How tired have you felt over the last week?') < weekPage.text.indexOf('Day 1:'), 'weekly questions come first');
+  assert.match(weekPage.text, /1: No fatigue/);
+  assert.match(weekPage.text, /Three things fatigue prevents me from doing/);
+  const home = await agent.get('/tracker');
+  assert.match(home.text, /href="\/tracker\/week\/1#weekly-questions"/);
+  const partial = await agent.post('/tracker/week/1/weekly').set('X-CSRF-Token', csrf).send({ tired_score: 7 });
   assert.deepStrictEqual(partial.body, { ok: true, error: null });
-  const badTired = await agent.post('/tracker/week/1/reflections').set('X-CSRF-Token', csrf).send({ tired_score: 0 });
-  assert.strictEqual(badTired.status, 400);
+  await agent.post('/tracker/week/1/weekly').set('X-CSRF-Token', csrf).send({ tired_score: 0 }).expect(400);
+
+  // Severity level is asked every day, right after the evening.
+  const evening = await agent.get('/tracker/week/1/day/1/evening');
+  assert.match(evening.text, /Save and go to next/);
+  const sevPage = await agent.get('/tracker/week/1/day/1/severity');
+  assert.match(sevPage.text, /Your severity level/);
+  assert.match(sevPage.text, /Very mild/);
+  const sev = await agent.post('/tracker/week/1/day/1/severity').type('form').send({ _csrf: csrf, severity: 'very_mild' });
+  assert.strictEqual(sev.headers.location, '/tracker/week/1/day/2/morning');
+  await agent.post('/tracker/week/1/day/1/severity').set('X-CSRF-Token', csrf).send({ severity: 'awful' }).expect(400);
 
   await h.fillWeek(p.id, 1);
   const done = await agent.post('/tracker/week/1/submit').type('form').send({ _csrf: csrf });

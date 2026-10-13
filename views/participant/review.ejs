@@ -7,8 +7,10 @@
     <p>The week can be submitted once these are done. Your entries so far are saved.</p>
     <ul>
     <% missing.slice(0, 12).forEach(function (m) { %>
-      <% if (m.kind === 'weekly') { var W = content.tracker.weekly; %>
-        <li><a href="/tracker/week/<%= n %>/reflections"><%= m.key === 'tired' ? W.tiredQuestion : m.key === 'severity' ? W.severityQuestion : W.patternQuestion %></a></li>
+      <% var W = content.tracker.weekly; if (m.kind === 'weekly') { %>
+        <li><a href="/tracker/week/<%= n %>#weekly-questions"><%= m.key === 'tired' ? W.tiredQuestion : W.patternQuestion %></a></li>
+      <% } else if (m.kind === 'severity') { %>
+        <li><a href="/tracker/week/<%= n %>/day/<%= m.day + 1 %>/severity"><%= time.formatDay(days[m.day]) %></a>: <%= W.severityQuestion.toLowerCase() %></li>
       <% } else if (m.kind === 'slot') { %>
         <li><a href="<%= slotUrl(n, m) %>"><%= time.formatDay(days[m.day]) %>, <%= timeLabel[m.time].toLowerCase() %></a>:
           <%= m.parts.map(function (p) { return p === 'score' ? 'score' : 'what you were doing'; }).join(' and ') %></li>

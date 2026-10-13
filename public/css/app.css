@@ -274,3 +274,5 @@ details summary { cursor: pointer; font-weight: 600; min-height: 44px; display: 
 .spoon-btn:hover { background: var(--teal-tint); border-color: var(--teal); }
 .spoon-btn .spoon { height: 56px; }
 .spoon-btn[aria-pressed="true"] { background: #f2f0ec; }
+.sev-slot { flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center; text-align: left; gap: .25rem .75rem; margin-top: .5rem; min-height: 52px; padding: .5rem .9rem; width: 100%; }
+.sev-slot .value { font-size: .95rem; }

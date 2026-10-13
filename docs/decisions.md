@@ -60,10 +60,11 @@ Newest updates at the top of each section.
 
 ## Decided (Abha, latest)
 
-- There is no separate Fatigue Screening. Its three questions (how tired
-  over the last week 1 to 10, severity level with five options, fatigue
-  pattern in one box) are part of every week of the Weekly Fatigue Tracker,
-  asked with the weekly reflection, and required to submit the week.
+- There is no separate Fatigue Screening. Its questions are part of the
+  Weekly Fatigue Tracker: "How tired have you felt over the last week?"
+  (1 to 10) and "Your Fatigue Pattern" at the top of every week, and "Your
+  severity level" (five options) every day, after the evening entry. All
+  are required to submit the week.
 - Spoon Tracker: from the day of Session 2. Just crossing off 12 spoons.
 - Energy Balance Blueprint: from the day of Session 3.
 - Participants never see week or session numbers, except the Weekly Fatigue
