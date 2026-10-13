@@ -1,0 +1,10 @@
+<%- include('../partials/head', { narrow: true }) %>
+<div class="card">
+  <h1>Welcome back</h1>
+  <p>Tap the button to finish signing in.</p>
+  <form method="post" action="/sign-in/confirm">
+    <input type="hidden" name="token" value="<%= token %>">
+    <button type="submit" class="wide">Sign in</button>
+  </form>
+</div>
+<%- include('../partials/foot') %>

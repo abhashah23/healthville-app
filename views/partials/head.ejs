@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title><%= title %> | Healthville</title>
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <a class="brand" href="/">
+    <%# Lotus mark approximated from the brand toolkit. Replace with the real logo file when supplied. %>
+    <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <path d="M50 60 C30 60 15 45 15 25 C35 25 50 40 50 60 Z" fill="#028090" opacity="0.75"/>
+      <path d="M50 60 C70 60 85 45 85 25 C65 25 50 40 50 60 Z" fill="#028090" opacity="0.75"/>
+      <path d="M50 60 C50 35 60 15 80 10 C82 32 68 52 50 60 Z" fill="#028090"/>
+      <path d="M50 60 C50 35 40 15 20 10 C18 32 32 52 50 60 Z" fill="#028090"/>
+      <ellipse cx="50" cy="64" rx="14" ry="7" fill="#01606c"/>
+    </svg>
+    Healthville
+  </a>
+  <% if (user) { %>
+  <nav class="site-nav" aria-label="Main">
+    <% if (user.role === 'participant') { %>
+      <a href="/tracker">My tracker</a>
+    <% } else { %>
+      <a href="/staff">Groups</a>
+      <% if (user.role === 'admin') { %><a href="/admin">Admin</a><% } %>
+    <% } %>
+    <form method="post" action="/sign-out">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button type="submit" class="link">Sign out</button>
+    </form>
+  </nav>
+  <% } %>
+</header>
+<main id="main" class="<%= typeof narrow !== 'undefined' && narrow ? 'narrow' : '' %>">

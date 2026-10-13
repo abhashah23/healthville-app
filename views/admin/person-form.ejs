@@ -1,0 +1,51 @@
+<%- include('../partials/head', { narrow: true }) %>
+<p><a href="/admin/people">People</a></p>
+<h1><%= person.id ? 'Edit ' + person.role : 'Add a ' + person.role %></h1>
+<form class="card" method="post" action="/admin/people<%= person.id ? '/' + person.id : '' %>">
+  <% if (error) { %><div class="error-box" role="alert"><%= error %></div><% } %>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <% if (!person.id) { %><input type="hidden" name="role" value="<%= person.role %>"><% } %>
+  <div class="field">
+    <label for="name">Name</label>
+    <% if (person.role === 'participant') { %><p class="hint">Facilitators see this name.</p><% } %>
+    <input type="text" id="name" name="name" value="<%= person.name %>" maxlength="100" autocomplete="off">
+  </div>
+  <div class="field">
+    <label for="email">Email address</label>
+    <p class="hint">Sign-in links are sent here.</p>
+    <input type="email" id="email" name="email" value="<%= person.email %>" maxlength="254" autocomplete="off">
+  </div>
+  <% if (person.role === 'participant') { %>
+  <div class="field">
+    <label for="group_id">Group</label>
+    <select id="group_id" name="group_id">
+      <option value="">Choose a group</option>
+      <% groups.forEach(function (g) { %><option value="<%= g.id %>" <%= Number(person.group_id) === g.id ? 'selected' : '' %>><%= g.name %></option><% }) %>
+    </select>
+  </div>
+  <div class="field">
+    <label for="participant_code">Participant code</label>
+    <p class="hint"><%= person.id ? 'Leave as is unless it was entered wrongly.' : 'Leave empty and one will be created, for example HV-7K3QM.' %></p>
+    <input type="text" id="participant_code" name="participant_code" value="<%= person.participant_code || '' %>" maxlength="20" autocomplete="off">
+  </div>
+  <% } %>
+  <% if (person.id) { %>
+  <label class="checkbox"><input type="checkbox" name="active" <%= person.active ? 'checked' : '' %>> Account is active (can sign in)</label>
+  <% } %>
+  <div class="actions"><button type="submit"><%= person.id ? 'Save' : 'Add' %></button></div>
+</form>
+
+<% if (person.id && person.role === 'participant') { %>
+<form class="card" method="post" action="/admin/people/<%= person.id %>/delete">
+  <h2>Delete this participant's data</h2>
+  <p>Use this when a participant asks for their data to be deleted. It removes their account and every tracker entry they made. It cannot be undone.</p>
+  <p>The audit log keeps a record that the deletion happened, under their participant code only.</p>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="field">
+    <label for="confirm_code">To confirm, type the participant code: <%= person.participant_code %></label>
+    <input type="text" id="confirm_code" name="confirm_code" autocomplete="off">
+  </div>
+  <button type="submit" class="danger">Delete all data for this participant</button>
+</form>
+<% } %>
+<%- include('../partials/foot') %>

@@ -1,0 +1,15 @@
+<% var fmt = function (v) { return v === null || v === undefined ? 'No data' : v.toFixed(1); }; %>
+<details>
+  <summary>Show the numbers as a table</summary>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Table, scrolls sideways on small screens">
+  <table>
+    <caption>Average fatigue score (0 to 10)</caption>
+    <thead><tr><th scope="col">Week</th><th scope="col">Whole day</th><th scope="col">Morning</th><th scope="col">Afternoon</th><th scope="col">Evening</th></tr></thead>
+    <tbody>
+    <% rows.forEach(function (r) { %>
+      <tr><th scope="row">Week <%= r.week %></th><td><%= fmt(r.overall) %></td><td><%= fmt(r.morning) %></td><td><%= fmt(r.afternoon) %></td><td><%= fmt(r.evening) %></td></tr>
+    <% }) %>
+    </tbody>
+  </table>
+  </div>
+</details>

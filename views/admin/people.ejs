@@ -1,0 +1,28 @@
+<%- include('../partials/head') %>
+<p><a href="/admin">Admin</a></p>
+<h1>People</h1>
+<% if (deleted) { %><div class="card notice" role="status"><p>All data for participant <strong><%= deleted %></strong> has been deleted.</p></div><% } %>
+<div class="actions top">
+  <a class="button" href="/admin/people/new?role=participant">Add a participant</a>
+  <a class="button secondary" href="/admin/people/new?role=facilitator">Add a facilitator</a>
+  <a class="button secondary" href="/admin/people/new?role=admin">Add an admin</a>
+</div>
+<div class="card">
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table, scrolls sideways on small screens">
+<table>
+  <thead><tr><th scope="col">Name</th><th scope="col">Role</th><th scope="col">Email</th><th scope="col">Group and code</th><th scope="col">Status</th></tr></thead>
+  <tbody>
+  <% people.forEach(function (p) { %>
+    <tr>
+      <th scope="row"><a href="/admin/people/<%= p.id %>"><%= p.name %></a></th>
+      <td><%= p.role.charAt(0).toUpperCase() + p.role.slice(1) %></td>
+      <td><%= p.email %></td>
+      <td><%= p.role === 'participant' ? p.group_name + ', ' + p.participant_code : '' %></td>
+      <td><%= p.active ? 'Active' : 'Turned off' %></td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+</div>
+</div>
+<%- include('../partials/foot') %>

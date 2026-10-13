@@ -1,0 +1,24 @@
+<%- include('../partials/head') %>
+<p><a href="/admin">Admin</a></p>
+<h1>Audit log</h1>
+<p class="hint">The most recent 300 entries. Participants are shown by code.</p>
+<% var labels = { sign_in: 'Signed in', view_group: 'Viewed group', view_participant: 'Viewed participant', create_group: 'Added group', update_group: 'Changed group', create_person: 'Added person', update_person: 'Changed person', delete_participant: 'Deleted participant data' }; %>
+<div class="card">
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table, scrolls sideways on small screens">
+<table>
+  <thead><tr><th scope="col">When</th><th scope="col">Who</th><th scope="col">What</th><th scope="col">Participant</th><th scope="col">Group</th></tr></thead>
+  <tbody>
+  <% entries.forEach(function (e) { %>
+    <tr>
+      <td><%= time.formatTimestamp(e.at) %></td>
+      <td><%= e.actor_label %></td>
+      <td><%= labels[e.action] || e.action %></td>
+      <td><%= e.subject_label || '' %></td>
+      <td><%= e.group_name || '' %></td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+</div>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,59 @@
+<%- include('../partials/head', { narrow: true }) %>
+<% var firstName = user.name.split(' ')[0]; var pLabel = function (s) { return s === 'not_submitted' ? 'Closed' : statusLabels[s]; }; %>
+<h1>Hello, <%= firstName %></h1>
+
+<% if (current) { %>
+<section class="card" aria-labelledby="this-week">
+  <h2 id="this-week">Week <%= current.n %></h2>
+  <% if (current.status === 'submitted') { %>
+    <p>You have submitted this week. Thank you.</p>
+    <% if (nextOpens) { %><p>Week <%= nextOpens.n %> opens on <%= time.formatDay(nextOpens.opens) %>.</p><% } %>
+  <% } else { %>
+    <p><%= current.completed %> of 21 times filled in.</p>
+    <svg class="progress" viewBox="0 0 21 1" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect width="21" height="1" class="progress-track"/><rect width="<%= current.completed %>" height="1" class="progress-fill"/></svg>
+    <p class="hint">This week closes when your next session starts: <%- include('../partials/deadline', { at: current.closes }) %>.</p>
+    <div class="actions">
+      <a class="button wide" href="<%= continueUrl %>"><%= current.completed === 0 ? 'Start this week' : 'Continue' %></a>
+      <a class="button secondary wide" href="/tracker/week/<%= current.n %>">See the whole week</a>
+    </div>
+  <% } %>
+</section>
+<% } else if (nextOpens) { %>
+<section class="card">
+  <h2>Week <%= nextOpens.n %> opens on <%= time.formatDay(nextOpens.opens) %></h2>
+  <p>You can start filling in your tracker from that day.</p>
+</section>
+<% } else { %>
+<section class="card">
+  <h2>All six weeks are finished</h2>
+  <p>Your entries are below.</p>
+</section>
+<% } %>
+
+<%- include('../partials/not-monitored') %>
+
+<section class="card" aria-labelledby="my-weeks">
+  <h2 id="my-weeks">My weeks</h2>
+  <ul class="week-list">
+    <% weeks.forEach(function (w) { %>
+    <li>
+      <% if (w.state === 'upcoming') { %>
+        <span>Week <%= w.n %></span>
+      <% } else { %>
+        <a href="/tracker/week/<%= w.n %>">Week <%= w.n %></a>
+      <% } %>
+      <span class="chip <%= w.status %>"><%= pLabel(w.status) %></span>
+    </li>
+    <% }) %>
+  </ul>
+</section>
+
+<% if (chart) { %>
+<section class="card" aria-labelledby="my-chart">
+  <h2 id="my-chart">My scores over the weeks</h2>
+  <p class="hint">Averages from the weeks you submitted.</p>
+  <%- chart %>
+  <%- include('../partials/averages-table', { rows: averages }) %>
+</section>
+<% } %>
+<%- include('../partials/foot', { scripts: ['/js/localtime.js'] }) %>

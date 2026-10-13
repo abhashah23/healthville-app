@@ -20,15 +20,38 @@ Newest updates at the top of each section.
 - English only.
 - Dr. Howell approves all participant-facing wording.
 
-## Open questions (Phase 1)
+## Decided (from Abha, second round)
 
-- Name of the LMS (written as "MynUCLO"), and a link to it.
-- Fatigue score: 0 to 10 (handout) or 1 to 10 (LMS today)?
-- Exactly when a week closes, and what happens to an unsubmitted week.
-- Are the three weekly reflection questions required?
-- Is Dr. Howell an admin (can change things) or read-only?
-- Facilitator names, and how many groups in the pilot.
-- Which colours and fonts to follow: the brief or the design system file.
+- Fatigue score is 0 to 10.
+- A week closes at the start of the next session (Thursday 1:00 PM ET).
+- Staff can see what was entered in a week that closed without being
+  submitted. It is marked "Not submitted".
+- The three weekly reflection questions are required.
+- Dr. Howell is an admin.
+- There are 14 facilitators.
+- The participant code is shown in the app, next to the name.
+- LMS: MyNuclo (https://healthville.mynuclo.com/). Phase 1 is a link from it.
+- Colours and fonts follow the brief: teal #028090 headings, Poppins.
+
+## Choices made while building (Abha can change these)
+
+- Facilitators do not see a week while it is still in progress. They see it
+  once it is submitted or closed.
+- Averages and charts use submitted weeks only.
+- Severity bands are shown for single scores, not for averages, because the
+  handout bands are whole numbers only.
+- Participants can fill in any day of the open week, in any order.
+- Participants see the band key from the handout under the score buttons.
+
+## Open questions
+
+- Week 6 has no next session. For now it closes one week after Session 6, at
+  1:00 PM ET. Is that right?
+- Words for each end of the 0 to 10 scale (for example "0 = no fatigue,
+  10 = worst possible"). For now only the numbers are shown.
+- Should group and participant averages show a severity band? If so, how
+  should averages like 3.5 be rounded?
+- Which of the 14 facilitators run the pilot group, and is it one group?
 
 ## Placeholders waiting for sign-off
 

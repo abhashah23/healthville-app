@@ -1,0 +1,46 @@
+<%- include('../partials/head') %>
+<p><a href="/staff">All groups</a></p>
+<h1><%= group.name %></h1>
+<p>Session 1: <%= time.formatDay(time.sessionDay(group.session1_date, 1)) %>. Thursdays, 1:00 to 2:30 PM Eastern Time.</p>
+
+<section class="card" aria-labelledby="grid-title">
+  <h2 id="grid-title">Weekly tracker by participant</h2>
+  <% if (!grid.length) { %><p>No participants in this group yet.</p><% } else { %>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Status table, scrolls sideways on small screens">
+  <table class="grid">
+    <caption class="visually-hidden">Weekly tracker status for each participant, weeks 1 to 6</caption>
+    <thead><tr><th scope="col">Participant</th><% weekNumbers.forEach(function (n) { %><th scope="col">Week <%= n %></th><% }) %></tr></thead>
+    <tbody>
+    <% grid.forEach(function (p) { %>
+      <tr>
+        <th scope="row"><a href="/staff/participants/<%= p.id %>"><%= p.name %></a><br><span class="hint"><%= p.participant_code %></span></th>
+        <% p.weeks.forEach(function (s) { %><td><%- include('../partials/status', { status: s }) %></td><% }) %>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+  </div>
+  <% } %>
+</section>
+
+<section class="card" aria-labelledby="summary-title">
+  <h2 id="summary-title">Group summary</h2>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Summary table, scrolls sideways on small screens">
+  <table>
+    <caption class="visually-hidden">Submissions and average score by week</caption>
+    <thead><tr><th scope="col">Week</th><th scope="col">Submitted</th><th scope="col">Group average score</th></tr></thead>
+    <tbody>
+    <% summary.forEach(function (s) { %>
+      <tr>
+        <th scope="row">Week <%= s.week %></th>
+        <td><%= s.submitted %> of <%= s.total %></td>
+        <td><%= s.average === null ? 'No submitted weeks' : s.average.toFixed(1) %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+  </div>
+  <p class="hint">Averages use submitted weeks only, across all days and times of day.</p>
+  <% if (chart) { %><%- chart %><% } %>
+</section>
+<%- include('../partials/foot') %>

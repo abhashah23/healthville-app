@@ -1,0 +1,20 @@
+<%- include('../partials/head', { narrow: true }) %>
+<h1>Admin</h1>
+<div class="card">
+  <h2><a href="/admin/groups">Groups</a></h2>
+  <p>Add groups, set the Session 1 date and choose facilitators.</p>
+</div>
+<div class="card">
+  <h2><a href="/admin/people">People</a></h2>
+  <p>Add participants, facilitators and admins. Turn accounts off. Delete a participant's data on request.</p>
+</div>
+<div class="card">
+  <h2><a href="/admin/audit">Audit log</a></h2>
+  <p>Who signed in, who viewed which participant's data, and what was changed.</p>
+</div>
+<div class="card placeholder">
+  <span class="placeholder-tag">Pending Abha</span>
+  <h2>Retention period</h2>
+  <p><%= content.retentionPeriod %></p>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,53 @@
+<%- include('../partials/head') %>
+<p><a href="/staff/groups/<%= group.id %>">Back to <%= group.name %></a></p>
+<h1><%= participant.name %></h1>
+<p>Participant code <strong><%= participant.participant_code %></strong>. <%= group.name %>.<% if (!participant.active) { %> <span class="chip not_started">Account turned off</span><% } %></p>
+
+<section class="card" aria-labelledby="weeks-title">
+  <h2 id="weeks-title">Weeks at a glance</h2>
+  <ul class="week-list">
+  <% weeks.forEach(function (w) { %>
+    <li><span><% if (w.hasData && w.status !== 'in_progress') { %><a href="#week-<%= w.n %>">Week <%= w.n %></a><% } else { %>Week <%= w.n %><% } %></span><%- include('../partials/status', { status: w.status }) %></li>
+  <% }) %>
+  </ul>
+  <p class="hint">Entries for the current week appear once it is submitted, or once it closes at the start of the next session.</p>
+</section>
+
+<% if (chart) { %>
+<section class="card" aria-labelledby="chart-title">
+  <h2 id="chart-title">Fatigue across the six weeks</h2>
+  <%- chart %>
+  <%- include('../partials/averages-table', { rows: averages }) %>
+</section>
+<% } %>
+
+<% var shown = weeks.filter(function (w) { return w.hasData && w.status !== 'in_progress'; }); %>
+<% if (shown.length) { %><h2>Weekly entries</h2><% } %>
+<% shown.forEach(function (w, idx) { %>
+<details class="card week" id="week-<%= w.n %>" <%= idx === shown.length - 1 ? 'open' : '' %>>
+  <summary>Week <%= w.n %>&nbsp;<%- include('../partials/status', { status: w.status }) %></summary>
+  <% if (w.status === 'submitted') { %><p class="hint">Submitted <%= time.formatTimestamp(w.week.row.submitted_at) %>.</p><% } else { %><p class="hint">Not submitted. This is what was entered before the week closed.</p><% } %>
+  <% w.days.forEach(function (d, i) { %>
+    <div class="entry-day">
+      <h3><%= time.formatDay(d) %></h3>
+      <% content.tracker.timesOfDay.forEach(function (t) { var e = w.week.entries[i + '-' + t.key]; %>
+        <div class="entry-row">
+          <div><strong><%= t.label %></strong></div>
+          <div>
+            <% if (!e || (e.score === null && !e.activity && !e.notes)) { %><span class="empty">Nothing entered</span><% } else { %>
+              <% if (e.score !== null) { %><strong><%= e.score %></strong> <%- include('../partials/band', { score: e.score }) %><% } else { %><span class="empty">No score</span><% } %>
+              <div class="what"><%= e.activity || '' %></div>
+              <% if (e.notes) { %><div class="notes">Notes: <%= e.notes %></div><% } %>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% }) %>
+  <h3>Weekly reflection</h3>
+  <% content.tracker.reflections.forEach(function (r) { var v = w.week.row ? w.week.row[r.key] : ''; %>
+    <p><strong><%= r.label %></strong><br><% if (v) { %><%= v %><% } else { %><span class="empty">Not answered</span><% } %></p>
+  <% }) %>
+</details>
+<% }) %>
+<%- include('../partials/foot') %>

@@ -1,0 +1,12 @@
+<%- include('../partials/head') %>
+<h1><%= title %></h1>
+<% if (!groups.length) { %>
+  <div class="card"><p><%= user.role === 'admin' ? 'No groups yet. Add one in Admin.' : 'You are not assigned to a group yet. An admin can add you to one.' %></p></div>
+<% } %>
+<% groups.forEach(function (g) { %>
+  <div class="card">
+    <h2><a href="/staff/groups/<%= g.id %>"><%= g.name %></a></h2>
+    <p>Session 1: <%= time.formatDay(time.sessionDay(g.session1_date, 1)) %>. <%= g.participants %> participant<%= g.participants === 1 ? '' : 's' %>.</p>
+  </div>
+<% }) %>
+<%- include('../partials/foot') %>

@@ -1,0 +1,19 @@
+<%- include('../partials/head', { narrow: true }) %>
+<p><a href="/tracker/week/<%= n %>">Back to week <%= n %></a></p>
+<h1>Week <%= n %> reflection</h1>
+<p class="hint">All three are needed before you submit the week. Short answers are fine.</p>
+<form class="card" method="post" action="/tracker/week/<%= n %>/reflections" data-autosave data-draft-key="hv-w<%= n %>-reflect-u<%= user.id %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <% content.tracker.reflections.forEach(function (r) { %>
+  <div class="field">
+    <label for="<%= r.key %>"><%= r.label %></label>
+    <textarea id="<%= r.key %>" name="<%= r.key %>" maxlength="<%= limits.reflection %>"><%= week.row ? week.row[r.key] : '' %></textarea>
+  </div>
+  <% }) %>
+  <p class="save-status" role="status" aria-live="polite" data-save-status></p>
+  <div class="actions">
+    <button type="submit" class="wide">Save and review the week</button>
+    <button type="submit" class="secondary wide" name="go" value="week">Save and see the whole week</button>
+  </div>
+</form>
+<%- include('../partials/foot', { scripts: ['/js/autosave.js'] }) %>

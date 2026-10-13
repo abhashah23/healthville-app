@@ -1,0 +1,43 @@
+<%- include('../partials/head', { narrow: true }) %>
+<% var tLabel = timeLabel[timeOfDay]; var score = entry ? entry.score : null; %>
+<p><a href="/tracker/week/<%= n %>">Back to week <%= n %></a></p>
+<h1><%= time.formatDay(dayDate) %><br><span class="subhead"><%= tLabel %></span></h1>
+<p class="hint">Week <%= n %>, day <%= day + 1 %> of 7. <%= completed %> of 21 times filled in.</p>
+
+<% if (error) { %><div class="error-box" role="alert"><%= error %></div><% } %>
+
+<form class="card" method="post" action="/tracker/week/<%= n %>/day/<%= day + 1 %>/<%= timeOfDay %>"
+      data-autosave data-draft-key="hv-w<%= n %>-d<%= day %>-<%= timeOfDay %>-u<%= user.id %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <fieldset aria-describedby="score-hint band-key">
+    <legend><%= content.tracker.scoreQuestion %></legend>
+    <p class="hint" id="score-hint">0 is the lowest, 10 is the highest.</p>
+    <div class="scores">
+      <% for (var s = 0; s <= 10; s++) { %>
+        <input type="radio" id="score-<%= s %>" name="score" value="<%= s %>" <%= score === s ? 'checked' : '' %>>
+        <label for="score-<%= s %>"><%= s %></label>
+      <% } %>
+    </div>
+    <p class="band-key" id="band-key">From the handout: 0 to 3 mild, 4 to 6 moderate, 7 to 10 severe.</p>
+  </fieldset>
+
+  <div class="field">
+    <label for="activity"><%= content.tracker.activityLabel %></label>
+    <p class="hint" id="activity-hint">A few words is enough. Needed before you submit the week.</p>
+    <input type="text" id="activity" name="activity" maxlength="<%= limits.activity %>" value="<%= entry ? entry.activity : '' %>" aria-describedby="activity-hint" autocomplete="off">
+  </div>
+
+  <div class="field">
+    <label for="notes"><%= content.tracker.notesLabel %></label>
+    <textarea id="notes" name="notes" class="short" maxlength="<%= limits.notes %>"><%= entry ? entry.notes : '' %></textarea>
+  </div>
+
+  <p class="save-status" role="status" aria-live="polite" data-save-status></p>
+
+  <div class="actions">
+    <button type="submit" class="wide">Save and go to next</button>
+    <button type="submit" class="secondary wide" name="go" value="week">Save and see the whole week</button>
+  </div>
+</form>
+<%- include('../partials/foot', { scripts: ['/js/autosave.js'] }) %>

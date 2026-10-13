@@ -1,0 +1,61 @@
+<%- include('../partials/head', { narrow: true }) %>
+<p><a href="/tracker">Back to my tracker</a></p>
+<h1>Week <%= n %></h1>
+<% var submitted = week.row && week.row.submitted_at; %>
+<% if (submitted) { %>
+  <p><span class="chip submitted">Submitted</span> on <%= time.formatTimestamp(week.row.submitted_at) %>. Submitted weeks cannot be changed.</p>
+<% } else if (editable) { %>
+  <p><%= completed %> of 21 times filled in. Tap any time of day to fill it in. Everything saves as you go.</p>
+  <p class="hint">This week closes <%- include('../partials/deadline', { at: closes }) %>. Your facilitator sees your entries once you submit, or once the week closes.</p>
+<% } else { %>
+  <p><span class="chip not_submitted">Closed</span> This week closed before it was submitted. You can still see what you entered.</p>
+<% } %>
+
+<section class="card" aria-labelledby="days-title">
+  <h2 id="days-title" class="visually-hidden">Days</h2>
+  <ul class="day-list">
+  <% days.forEach(function (d, i) { %>
+    <li>
+      <div class="day-name">Day <%= i + 1 %>: <%= time.formatDay(d) %></div>
+      <div class="slots">
+      <% content.tracker.timesOfDay.forEach(function (t) {
+           var e = week.entries[i + '-' + t.key];
+           var done = e && e.score !== null && e.activity.trim() !== '';
+           var partial = !done && e && (e.score !== null || e.activity !== '' || e.notes !== '');
+           var cls = 'slot' + (done ? ' done' : partial ? ' partial' : '');
+           var state = done ? 'done' : partial ? 'started, not finished' : 'empty';
+           var label = t.label + ', ' + state + (e && e.score !== null ? ', score ' + e.score : '');
+      %>
+        <% if (editable) { %>
+          <a class="<%= cls %>" href="/tracker/week/<%= n %>/day/<%= i + 1 %>/<%= t.key %>" aria-label="Day <%= i + 1 %> <%= label %>">
+        <% } else { %>
+          <div class="<%= cls %>">
+        <% } %>
+            <span><%= t.label %></span>
+            <span class="value" aria-hidden="true"><%= e && e.score !== null ? e.score : (done ? '' : '–') %></span>
+            <% if (!editable && e && e.activity) { %><span class="visually-hidden">Doing: <%= e.activity %></span><% } %>
+        <% if (editable) { %></a><% } else { %></div><% } %>
+      <% }) %>
+      </div>
+      <% if (!editable) { content.tracker.timesOfDay.forEach(function (t) { var e = week.entries[i + '-' + t.key]; if (e && (e.activity || e.notes)) { %>
+        <p class="hint"><strong><%= t.label %>:</strong> <%= e.activity %><% if (e.notes) { %>. Notes: <%= e.notes %><% } %></p>
+      <% } }) } %>
+    </li>
+  <% }) %>
+  </ul>
+</section>
+
+<section class="card" aria-labelledby="reflect-title">
+  <h2 id="reflect-title">Weekly reflection</h2>
+  <% content.tracker.reflections.forEach(function (r) { var v = week.row ? week.row[r.key] : ''; %>
+    <p><strong><%= r.label %></strong><br><%= v ? v : (editable ? 'Not answered yet' : 'Not answered') %></p>
+  <% }) %>
+  <% if (editable) { %><a class="button secondary" href="/tracker/week/<%= n %>/reflections">Answer the reflection questions</a><% } %>
+</section>
+
+<% if (editable) { %>
+  <div class="actions">
+    <a class="button wide" href="/tracker/week/<%= n %>/review">Review and submit this week</a>
+  </div>
+<% } %>
+<%- include('../partials/foot', { scripts: ['/js/localtime.js'] }) %>

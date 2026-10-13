@@ -1,0 +1,11 @@
+</main>
+<footer class="site-footer">
+  <p><strong><%= content.notMonitored.title %>.</strong>
+  <% if (content.notMonitored.pending) { %><span>(Wording pending Dr. Howell sign-off.)</span><% } %>
+  <%= content.notMonitored.body %></p>
+  <p><%= content.notMonitored.contacts %></p>
+  <p>This app is for an educational program. It does not give medical advice.</p>
+</footer>
+<% if (typeof scripts !== 'undefined') { scripts.forEach(function (s) { %><script src="<%= s %>" defer></script><% }) } %>
+</body>
+</html>

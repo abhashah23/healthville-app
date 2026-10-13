@@ -1,0 +1,6 @@
+<section class="card <%= content.notMonitored.pending ? 'placeholder' : 'notice' %>" aria-labelledby="not-monitored-title">
+  <% if (content.notMonitored.pending) { %><span class="placeholder-tag">Pending Dr. Howell sign-off</span><% } %>
+  <h2 id="not-monitored-title"><%= content.notMonitored.title %></h2>
+  <p><%= content.notMonitored.body %></p>
+  <p><%= content.notMonitored.contacts %></p>
+</section>

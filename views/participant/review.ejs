@@ -1,0 +1,32 @@
+<%- include('../partials/head', { narrow: true }) %>
+<p><a href="/tracker/week/<%= n %>">Back to week <%= n %></a></p>
+<h1>Submit week <%= n %></h1>
+<% if (missing.length) { %>
+  <div class="card">
+    <h2>A few things still to fill in</h2>
+    <p>The week can be submitted once these are done. Your entries so far are saved.</p>
+    <ul>
+    <% missing.slice(0, 12).forEach(function (m) { %>
+      <% if (m.kind === 'slot') { %>
+        <li><a href="<%= slotUrl(n, m) %>"><%= time.formatDay(days[m.day]) %>, <%= timeLabel[m.time].toLowerCase() %></a>:
+          <%= m.parts.map(function (p) { return p === 'score' ? 'score' : 'what you were doing'; }).join(' and ') %></li>
+      <% } else { %>
+        <li><a href="/tracker/week/<%= n %>/reflections"><%= content.tracker.reflections.find(function (r) { return r.key === m.key; }).label %></a></li>
+      <% } %>
+    <% }) %>
+    </ul>
+    <% if (missing.length > 12) { %><p>And <%= missing.length - 12 %> more. <a href="/tracker/week/<%= n %>">See the whole week</a>.</p><% } %>
+    <p class="hint">This week closes <%- include('../partials/deadline', { at: closes }) %>.</p>
+  </div>
+<% } else { %>
+  <div class="card">
+    <h2>Everything is filled in</h2>
+    <p>Once you submit, you cannot change this week. Your facilitator will then be able to see it.</p>
+    <form method="post" action="/tracker/week/<%= n %>/submit">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button type="submit" class="wide">Submit week <%= n %></button>
+    </form>
+    <p class="actions"><a href="/tracker/week/<%= n %>">Look over the week first</a></p>
+  </div>
+<% } %>
+<%- include('../partials/foot', { scripts: ['/js/localtime.js'] }) %>

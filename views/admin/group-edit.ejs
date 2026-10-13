@@ -1,0 +1,25 @@
+<%- include('../partials/head', { narrow: true }) %>
+<p><a href="/admin/groups">Groups</a></p>
+<h1>Edit group</h1>
+<form class="card" method="post" action="/admin/groups/<%= group.id %>">
+  <% if (error) { %><div class="error-box" role="alert"><%= error %></div><% } %>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="field">
+    <label for="name">Group name</label>
+    <input type="text" id="name" name="name" value="<%= group.name %>" maxlength="100">
+  </div>
+  <div class="field">
+    <label for="session1_date">Date of Session 1</label>
+    <p class="hint">Must be a Thursday. Changing this moves every week's open and close dates.</p>
+    <input type="date" id="session1_date" name="session1_date" value="<%= group.session1_date %>">
+  </div>
+  <fieldset>
+    <legend>Facilitators for this group</legend>
+    <% if (!facilitators.length) { %><p class="hint">No facilitators yet. Add them under People first.</p><% } %>
+    <% facilitators.forEach(function (f) { %>
+      <label class="checkbox"><input type="checkbox" name="facilitators" value="<%= f.id %>" <%= f.assigned ? 'checked' : '' %>> <%= f.name %> (<%= f.email %>)</label>
+    <% }) %>
+  </fieldset>
+  <button type="submit">Save group</button>
+</form>
+<%- include('../partials/foot') %>

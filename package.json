@@ -1,0 +1,31 @@
+{
+  "name": "healthville-fatigue-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Healthville group coaching trackers: participant entry and staff views.",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node scripts/migrate.js",
+    "create-admin": "node scripts/create-admin.js",
+    "seed-demo": "node scripts/seed-demo.js",
+    "test": "node --test --test-concurrency=1 test/*.test.js"
+  },
+  "dependencies": {
+    "@fontsource/poppins": "5.1.0",
+    "cookie-parser": "1.4.7",
+    "ejs": "3.1.10",
+    "express": "4.22.3",
+    "helmet": "8.0.0",
+    "luxon": "3.5.0",
+    "nodemailer": "10.0.13",
+    "pg": "8.13.1"
+  },
+  "devDependencies": {
+    "supertest": "7.0.0"
+  }
+}
