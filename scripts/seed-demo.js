@@ -84,6 +84,17 @@ async function main() {
     );
   }
 
+  // Daily Spoon Tracker (week after Session 2) for the first four people.
+  for (const [i, person] of all.slice(0, 4).entries()) {
+    const sheet = await db.one(
+      `INSERT INTO spoon_sheets (participant_id, week_number, submitted_at) VALUES ($1, 2, $2) RETURNING *`,
+      [person.id, i < 3 ? new Date() : null]
+    );
+    for (const [d, used] of [[0, 9], [1, 11], [3, 7], [5, 12]]) {
+      await db.query('INSERT INTO spoon_days (sheet_id, day_index, used) VALUES ($1, $2, $3)', [sheet.id, d, used]);
+    }
+  }
+
   // Energy Balance Blueprint (week after Session 2) for the first three people.
   const people = await db.many(`SELECT id FROM users WHERE group_id = $1 AND role = 'participant' ORDER BY id LIMIT 3`, [group.id]);
   for (const [i, person] of people.entries()) {

@@ -1,8 +1,8 @@
 <%- include('../partials/head', { narrow: true }) %>
 <% var S = content.screening; var r = row || { tired_score: null, severity: null, pattern: '' }; %>
-<p><a href="/tracker">Back to my tracker</a></p>
+<p><a href="<%= week ? '/tracker/week/' + week : '/tracker' %>"><%= week ? 'Back to week ' + week : 'Back to my tracker' %></a></p>
 <h1><%= S.name %></h1>
-<p class="hint">Before Session <%= s %>.</p>
+<p class="hint"><%= content.tracker.name %><%= week ? ', week ' + week : '' %>. Before Session <%= s %>.</p>
 
 <% if (scState === 'upcoming') { %>
   <div class="card"><p>This opens on <%= time.formatDay(opens) %>.</p></div>
@@ -16,7 +16,11 @@
     <p class="pre"><%= r.pattern || 'Not answered' %></p>
   </div>
 <% } else { %>
+  <% if (week) { %>
+  <p>All three are needed before you submit week <%= week %>. They are submitted together with the week. Your answers save as you go.</p>
+  <% } else { %>
   <p>All three are needed before you submit. Your answers save as you go.</p>
+  <% } %>
   <p class="hint">This closes when Session <%= s %> starts: <%- include('../partials/deadline', { at: closes }) %>.</p>
   <% if (error) { %><div class="error-box" role="alert"><%= error %>
     <% if (missing.length) { %><ul><% missing.forEach(function (m) { %><li><a href="#q-<%= m %>"><%= m === 'tired' ? S.tiredQuestion : m === 'severity' ? S.severityQuestion : S.patternQuestion %></a></li><% }) %></ul><% } %>
@@ -55,8 +59,13 @@
 
     <p class="save-status" role="status" aria-live="polite" data-save-status></p>
     <div class="actions">
+      <% if (week) { %>
+      <button type="submit" class="wide" name="go" value="next">Save and go to the daily entries</button>
+      <button type="submit" class="secondary wide" name="go" value="week">Save and see the whole week</button>
+      <% } else { %>
       <button type="submit" class="wide" name="go" value="submit">Submit</button>
       <button type="submit" class="secondary wide" name="go" value="save">Save and finish later</button>
+      <% } %>
     </div>
   </form>
 <% } %>

@@ -43,9 +43,6 @@ function summariseDays(lines) {
       else day.given += l.points;
     }
     day.total = day.used - day.given;
-    // Today's spoons: start with 12, activities use them, replenishing gives
-    // them back. Never shown as more than 12.
-    day.spoonsLeft = Math.min(EB.dailySpoons, EB.dailySpoons - day.total);
     day.count = day.activity.length + day.replenish.length;
     return day;
   });

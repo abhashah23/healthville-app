@@ -4,20 +4,21 @@
 <p>Session 1: <%= time.formatDay(time.sessionDay(group.session1_date, 1)) %>. Thursdays, 1:00 to 2:30 PM Eastern Time.</p>
 
 <section class="card" aria-labelledby="grid-title">
-  <h2 id="grid-title">Weekly tracker by participant</h2>
+  <h2 id="grid-title">Trackers by participant</h2>
+  <p class="hint">"Before S1" is the <%= content.screening.name %> before Session 1. Week 5 includes the one before Session 6.</p>
   <% if (!grid.length) { %><p>No participants in this group yet.</p><% } else { %>
   <div class="table-wrap" tabindex="0" role="region" aria-label="Status table, scrolls sideways on small screens">
   <table class="grid">
     <caption class="visually-hidden">Weekly tracker status for each participant, weeks 1 to 6</caption>
-    <thead><tr><th scope="col">Participant</th><th scope="col">Screening S1</th><% weekNumbers.forEach(function (n) { %><th scope="col">Week <%= n %></th><% }) %><th scope="col"><%= content.energyBalance.name %></th><th scope="col">Screening S6</th></tr></thead>
+    <thead><tr><th scope="col">Participant</th><th scope="col">Before S1</th><% weekNumbers.forEach(function (n) { %><th scope="col">Week <%= n %></th><% }) %><th scope="col"><%= content.spoons.name %></th><th scope="col"><%= content.energyBalance.name %></th></tr></thead>
     <tbody>
     <% grid.forEach(function (p) { %>
       <tr>
         <th scope="row"><a href="/staff/participants/<%= p.id %>"><%= p.name %></a><br><span class="hint"><%= p.participant_code %></span></th>
-        <td><%- include('../partials/status', { status: p.sc[0] }) %></td>
+        <td><%- include('../partials/status', { status: p.sc1 }) %></td>
         <% p.weeks.forEach(function (s) { %><td><%- include('../partials/status', { status: s }) %></td><% }) %>
+        <td><%- include('../partials/status', { status: p.sp }) %></td>
         <td><%- include('../partials/status', { status: p.eb }) %></td>
-        <td><%- include('../partials/status', { status: p.sc[1] }) %></td>
       </tr>
     <% }) %>
     </tbody>
@@ -44,8 +45,9 @@
   </table>
   </div>
   <p class="hint">Averages use submitted weeks only, across all days and times of day.</p>
+  <p><strong><%= content.screening.name %> before Session 1:</strong> <%= sc1Submitted %> of <%= grid.length %> submitted. The one before Session 6 is part of week 5.</p>
+  <p><strong><%= content.spoons.name %>:</strong> <%= spSubmitted %> of <%= grid.length %> submitted.</p>
   <p><strong><%= content.energyBalance.name %>:</strong> <%= ebSubmitted %> of <%= grid.length %> submitted.</p>
-  <% scSubmitted.forEach(function (x) { %><p><strong><%= content.screening.name %> before Session <%= x.s %>:</strong> <%= x.n %> of <%= grid.length %> submitted.</p><% }) %>
   <% if (chart) { %><%- chart %><% } %>
 </section>
 <%- include('../partials/foot') %>

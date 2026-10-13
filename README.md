@@ -4,14 +4,14 @@ A simple app where participants in Healthville's six-session group coaching
 program, "Managing and Coping with Cancer-Related Fatigue", fill in their
 weekly tracker, and where Healthville staff can see what has been filled in.
 
-**Status: Phase 1, the Energy Balance Blueprint and the Fatigue Screening built and working with made-up data. Not yet approved for
+**Status: the Weekly Fatigue Tracker (with the Fatigue Screening), the Daily Spoon Tracker and the Energy Balance Blueprint built and working with made-up data. Not yet approved for
 real participants.** See "Needs approval" below.
 
 ## What it does (Phase 1)
 
 **Participants**
 - Sign in with a link sent to their email. No password.
-- Fill in the Weekly Fatigue and Energy Tracker one time of day at a time:
+- Fill in the Weekly Fatigue Tracker one time of day at a time:
   a score from 0 to 10, what they were doing, and optional notes.
 - Every answer saves as they go. If the connection drops, the answer is kept
   on their device and saved again later.
@@ -23,19 +23,25 @@ real participants.** See "Needs approval" below.
 - For each day, they add activities that used energy and replenishing
   activities that gave energy back, each with points (spoons) from 1 to 4
   and an optional comment.
-- The app shows a daily total (points used, minus points given back) and
-  "Today's spoons": 12 spoons a day, as on the My Spoons handout.
+- The app shows a daily total: points used, minus points given back.
 - Same rules as the weekly tracker: submit once, no changes after, closes when
   Session 3 starts, and staff see it once it is submitted or closed.
 
-**Fatigue Screening** (before Session 1 and before Session 6, as in the LMS
-screenshot):
-- How tired have you felt over the last week? (1 to 10, "1: No fatigue",
-  "10: Worst possible fatigue")
-- Your severity level (Severe, Moderate, Mild, Very mild, None)
-- Your Fatigue Pattern: one box, with the four prompts above it.
-- Opens the week before the session and closes when the session starts.
-  Submit once. Staff see both screenings side by side.
+**Fatigue Screening**, part of the Weekly Fatigue Tracker (page 1 of the
+handout), following the LMS screenshot:
+- How tired have you felt over the last week? (1 to 10), Your severity level
+  (Severe, Moderate, Mild, Very mild, None), Your Fatigue Pattern (one box).
+- Before Session 1: the first step of the tracker, open the week before
+  Session 1 and submitted on its own.
+- Before Session 6: part of Week 5. It comes first in that week and is
+  submitted together with the week.
+
+**Daily Spoon Tracker** (Session 2 home practice, "Today's Spoons" on the My
+Spoons handout):
+- Open during the week after Session 2. Participants fill in any days.
+- Each day starts with 12 spoons. "Cross off a spoon" for each thing done,
+  "Put one back" to undo.
+- Submit once, no changes after, closes when Session 3 starts.
 
 **Facilitators** see only the groups they are assigned to:
 - A grid of who has submitted which week.
@@ -140,16 +146,23 @@ To deploy, see [docs/DEPLOY.md](docs/DEPLOY.md).
 **Energy Balance Blueprint (as a participant, in the week after Session 2)**
 1. On the home page, tap "Start the Energy Balance Blueprint".
 2. Choose a day. Add two activities and one replenishing activity.
-3. Check the daily total and Today's spoons (12 minus used, plus given back).
+3. Check the daily total: points used minus points given back.
 4. Change one line and remove another.
 5. Try to submit with nothing added. Then add an activity and submit.
 6. Check that nothing can be changed after submitting.
 
-**Fatigue Screening (as a participant, in the week before Session 1)**
-1. On the home page, tap "Start" on the Fatigue Screening card.
-2. Choose a number and a severity level. Watch for "Saved".
-3. Tap Submit with the pattern box empty. Does it tell you what is missing?
-4. Fill it in and submit. Check it cannot be changed.
+**Fatigue Screening (as a participant)**
+1. In the week before Session 1, the home page says "Before Session 1, start
+   with the Fatigue Screening". Answer the three questions and submit.
+2. In Week 5, the screening comes first. Try to submit Week 5 without it:
+   the review page should list the screening questions.
+3. Fill it in and submit Week 5. Both are submitted together.
+
+**Daily Spoon Tracker (as a participant, in the week after Session 2)**
+1. Tap "Start the Daily Spoon Tracker" and choose a day.
+2. Tap "Cross off a spoon" a few times, then "Put one back".
+3. Try to cross off more than 12. It should stop at 12.
+4. Submit, and check it cannot be changed.
 
 **As a facilitator**
 1. Sign in as `facilitator@demo.healthville.test`.

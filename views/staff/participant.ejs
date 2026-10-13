@@ -4,7 +4,8 @@
 <p>Participant code <strong><%= participant.participant_code %></strong>. <%= group.name %>.<% if (!participant.active) { %> <span class="chip not_started">Account turned off</span><% } %></p>
 
 <section class="card" aria-labelledby="sc-title">
-  <h2 id="sc-title"><%= content.screening.name %></h2>
+  <h2 id="sc-title"><%= content.tracker.name %>: <%= content.screening.name %></h2>
+  <p class="hint">Before Session 1, and before Session 6 as part of week 5.</p>
   <div class="sc-compare">
   <% screenings.forEach(function (sc) { var r = sc.row; var show = r && (sc.status === 'submitted' || sc.status === 'not_submitted'); %>
     <div class="sc-col">
@@ -40,6 +41,24 @@
   <%- include('../partials/averages-table', { rows: averages }) %>
 </section>
 <% } %>
+
+<details class="card week" id="spoons">
+  <summary><%= content.spoons.name %>&nbsp;<%- include('../partials/status', { status: sp.status }) %></summary>
+  <% if (sp.status === 'submitted' || sp.status === 'not_submitted') { %>
+    <% if (sp.status === 'submitted') { %><p class="hint">Submitted <%= time.formatTimestamp(sp.sheet.submitted_at) %>.</p><% } else { %><p class="hint">Not submitted. This is what was entered before it closed.</p><% } %>
+    <% if (!sp.daysUsed) { %><p class="empty">Nothing entered.</p><% } else { %>
+    <ul class="week-list">
+      <% sp.dates.forEach(function (d, i) { var u = sp.days[i]; if (u === null) return; %>
+        <li><span><%= time.formatDay(d) %></span><span><strong><%= u %> of <%= content.spoons.perDay %></strong> spoons used</span></li>
+      <% }) %>
+    </ul>
+    <% } %>
+  <% } else if (sp.status === 'in_progress') { %>
+    <p class="hint">Entries appear once it is submitted, or once it closes at the start of Session <%= content.spoons.week + 1 %>.</p>
+  <% } else { %>
+    <p class="empty">Nothing yet.</p>
+  <% } %>
+</details>
 
 <details class="card week" id="energy">
   <summary><%= content.energyBalance.name %>&nbsp;<%- include('../partials/status', { status: eb.status }) %></summary>

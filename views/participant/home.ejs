@@ -1,27 +1,29 @@
 <%- include('../partials/head', { narrow: true }) %>
-<% var firstName = user.name.split(' ')[0]; var pLabel = function (s) { return s === 'not_submitted' ? 'Closed' : statusLabels[s]; }; %>
+<% var firstName = user.name.split(' ')[0]; var pLabel = function (s) { return s === 'not_submitted' ? 'Closed' : statusLabels[s]; }; var SC = content.screening; %>
 <h1>Hello, <%= firstName %></h1>
 
-<% screenings.forEach(function (sc) { if (sc.state !== 'open' || sc.status === 'submitted') return; %>
-<section class="card" aria-labelledby="sc-<%= sc.s %>">
-  <h2 id="sc-<%= sc.s %>"><%= content.screening.name %> before Session <%= sc.s %></h2>
-  <p>Three short questions. Please fill it in before Session <%= sc.s %> starts: <%- include('../partials/deadline', { at: sc.closes }) %>.</p>
-  <a class="button wide" href="/tracker/screening/<%= sc.s %>"><%= sc.status === 'in_progress' ? 'Continue' : 'Start' %></a>
-</section>
-<% }) %>
-
-<% if (current) { %>
+<% if (sc1.state === 'open' && sc1.status !== 'submitted') { %>
 <section class="card" aria-labelledby="this-week">
-  <h2 id="this-week">Week <%= current.n %></h2>
+  <h2 id="this-week"><%= content.tracker.name %></h2>
+  <p>Before Session 1, start with the <%= SC.name %>: three short questions.</p>
+  <p class="hint">Please fill it in before Session 1 starts: <%- include('../partials/deadline', { at: sc1.closes }) %>.</p>
+  <a class="button wide" href="/tracker/screening/1"><%= sc1.status === 'in_progress' ? 'Continue' : 'Start' %></a>
+</section>
+<% } else if (current) { %>
+<section class="card" aria-labelledby="this-week">
+  <h2 id="this-week"><%= content.tracker.name %>, week <%= current.n %></h2>
   <% if (current.status === 'submitted') { %>
     <p>You have submitted this week. Thank you.</p>
     <% if (nextOpens) { %><p>Week <%= nextOpens.n %> opens on <%= time.formatDay(nextOpens.opens) %>.</p><% } %>
   <% } else { %>
+    <% if (current.screening) { %>
+      <p><%= SC.name %> (before Session <%= current.screening.s %>): <strong><%= current.screening.done ? 'done' : 'not done yet' %></strong></p>
+    <% } %>
     <p><%= current.completed %> of 21 times filled in.</p>
     <svg class="progress" viewBox="0 0 21 1" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect width="21" height="1" class="progress-track"/><rect width="<%= current.completed %>" height="1" class="progress-fill"/></svg>
     <p class="hint">This week closes when your next session starts: <%- include('../partials/deadline', { at: current.closes }) %>.</p>
     <div class="actions">
-      <a class="button wide" href="<%= continueUrl %>"><%= current.completed === 0 ? 'Start this week' : 'Continue' %></a>
+      <a class="button wide" href="<%= continueUrl %>"><%= current.completed === 0 && !(current.screening && current.screening.started) ? 'Start this week' : 'Continue' %></a>
       <a class="button secondary wide" href="/tracker/week/<%= current.n %>">See the whole week</a>
     </div>
   <% } %>
@@ -38,43 +40,47 @@
 </section>
 <% } %>
 
-<% if (eb.state === 'open') { %>
-<section class="card" aria-labelledby="eb-title">
-  <h2 id="eb-title"><%= content.energyBalance.name %></h2>
-  <% if (eb.status === 'submitted') { %>
+<% [{ t: sp, name: content.spoons.name, url: '/tracker/spoons' }, { t: eb, name: content.energyBalance.name, url: '/tracker/energy' }].forEach(function (x, i) { if (x.t.state !== 'open') return; %>
+<section class="card" aria-labelledby="practice-<%= i %>">
+  <h2 id="practice-<%= i %>"><%= x.name %></h2>
+  <% if (x.t.status === 'submitted') { %>
     <p>You have submitted it. Thank you.</p>
   <% } else { %>
-    <p>Session 2 home practice. Fill in any days you like this week. <%= eb.daysUsed ? eb.daysUsed + ' day' + (eb.daysUsed === 1 ? '' : 's') + ' filled in so far.' : '' %></p>
-    <a class="button secondary wide" href="/tracker/energy"><%= eb.daysUsed ? 'Continue' : 'Start' %> the <%= content.energyBalance.name %></a>
+    <p>Session 2 home practice. Fill in any days you like this week. <%= x.t.daysUsed ? x.t.daysUsed + ' day' + (x.t.daysUsed === 1 ? '' : 's') + ' filled in so far.' : '' %></p>
+    <a class="button secondary wide" href="<%= x.url %>"><%= x.t.daysUsed ? 'Continue' : 'Start' %> the <%= x.name %></a>
   <% } %>
 </section>
-<% } %>
+<% }) %>
 
 <%- include('../partials/not-monitored') %>
 
-<section class="card" aria-labelledby="my-weeks">
-  <h2 id="my-weeks">My weeks</h2>
+<section class="card" aria-labelledby="my-trackers">
+  <h2 id="my-trackers">My trackers</h2>
+  <h3><%= content.tracker.name %></h3>
   <ul class="week-list">
+    <li>
+      <% if (sc1.state === 'upcoming') { %><span>Before Session 1: <%= SC.name %></span><% } else { %><a href="/tracker/screening/1">Before Session 1: <%= SC.name %></a><% } %>
+      <span class="chip <%= sc1.status %>"><%= pLabel(sc1.status) %></span>
+    </li>
     <% weeks.forEach(function (w) { %>
     <li>
       <% if (w.state === 'upcoming') { %>
-        <span>Week <%= w.n %></span>
+        <span>Week <%= w.n %><%= w.n === SC.inWeek[6] ? ' (with ' + SC.name + ')' : '' %></span>
       <% } else { %>
-        <a href="/tracker/week/<%= w.n %>">Week <%= w.n %></a>
+        <a href="/tracker/week/<%= w.n %>">Week <%= w.n %><%= w.n === SC.inWeek[6] ? ' (with ' + SC.name + ')' : '' %></a>
       <% } %>
       <span class="chip <%= w.status %>"><%= pLabel(w.status) %></span>
     </li>
     <% }) %>
-    <% screenings.forEach(function (sc) { %>
+  </ul>
+  <h3>Session 2 home practice</h3>
+  <ul class="week-list">
+    <% [{ t: sp, name: content.spoons.name, url: '/tracker/spoons' }, { t: eb, name: content.energyBalance.name, url: '/tracker/energy' }].forEach(function (x) { %>
     <li>
-      <% if (sc.state === 'upcoming') { %><span><%= content.screening.name %>, Session <%= sc.s %></span><% } else { %><a href="/tracker/screening/<%= sc.s %>"><%= content.screening.name %>, Session <%= sc.s %></a><% } %>
-      <span class="chip <%= sc.status %>"><%= pLabel(sc.status) %></span>
+      <% if (x.t.state === 'upcoming') { %><span><%= x.name %></span><% } else { %><a href="<%= x.url %>"><%= x.name %></a><% } %>
+      <span class="chip <%= x.t.status %>"><%= pLabel(x.t.status) %></span>
     </li>
     <% }) %>
-    <li>
-      <% if (eb.state === 'upcoming') { %><span><%= content.energyBalance.name %></span><% } else { %><a href="/tracker/energy"><%= content.energyBalance.name %></a><% } %>
-      <span class="chip <%= eb.status %>"><%= pLabel(eb.status) %></span>
-    </li>
   </ul>
 </section>
 

@@ -8,6 +8,7 @@ const content = require('../content');
 const screening = require('../screening');
 
 const router = express.Router();
+const inWeek = content.screening.inWeek;
 
 router.param('s', (req, res, next, value) => {
   const s = Number(value);
@@ -25,6 +26,7 @@ async function renderForm(req, res, { error = null, missing = [], status = 200, 
   res.status(status).render('participant/screening', {
     title: `${content.screening.name} before Session ${req.scSession}`,
     s: req.scSession,
+    week: inWeek[req.scSession] || null,
     row: values || row,
     submittedAt: row ? row.submitted_at : null,
     editable,
@@ -56,6 +58,9 @@ router.post('/:s', async (req, res, next) => {
     const error = await screening.save(req.user.id, req.scSession, req.body);
     if (wantsJson) return res.status(error ? 400 : 200).json({ ok: !error, error });
     if (error) return renderForm(req, res, { error, status: 400 });
+    // The screening before Session 6 is submitted together with its week.
+    const week = inWeek[req.scSession];
+    if (week) return res.redirect(req.body.go === 'week' ? `/tracker/week/${week}` : `/tracker/week/${week}/day/1/morning`);
     if (req.body.go !== 'submit') return res.redirect('/tracker');
     const missing = await screening.submit(req.user.id, req.scSession);
     if (missing.length) {

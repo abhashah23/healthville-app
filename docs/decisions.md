@@ -54,10 +54,9 @@ Newest updates at the top of each section.
 - Weekly tracker scale words (Abha, yes): "0 = No fatigue",
   "10 = Worst possible fatigue", from page 1 of the handout.
 - Week still starts on Thursday (session day), not Monday as on paper.
-- Today's spoons (Abha chose this from the My Spoons handout): each
-  Energy Balance day starts with 12 spoons. Activities use them,
-  replenishing gives them back, never more than 12 shown. If more are used
-  than 12, the app says how many more, without judgement.
+- Daily Spoon Tracker: same rules as the other trackers (submit once, closes
+  at Session 3, staff see it once submitted or closed). It can be submitted
+  once any day has been opened and saved. A day stops at 12 spoons.
 
 ## Decided (Fatigue Screening, from Abha)
 
@@ -67,6 +66,15 @@ Newest updates at the top of each section.
 - Follows the LMS screenshot: 1 to 10 scale, five severity levels (Severe,
   Moderate, Mild, Very mild, None), one box for the fatigue pattern.
 - All three answers are required to submit.
+
+## Decided (Abha, restructure)
+
+- The Fatigue Screening is part of the main Weekly Fatigue Tracker, not a
+  separate tracker. Before Session 1 it is the tracker's first step. Before
+  Session 6 it is part of Week 5 and is submitted with that week.
+- The Daily Spoon Tracker ("Today's Spoons", 12 a day) and the Energy
+  Balance Blueprint are two separate trackers. Spoons were taken out of the
+  Energy Balance Blueprint.
 
 ## Choices made while building (Abha can change these)
 
@@ -82,6 +90,7 @@ Newest updates at the top of each section.
   matching the 20 rows on the paper sheet.
 - Energy Balance: it can be submitted once at least one activity is entered
   on any day.
+- The Week 5 screening comes first in that week, like page 1 of the handout.
 
 ## Open questions
 

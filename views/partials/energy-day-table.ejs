@@ -10,4 +10,4 @@
   </ul>
   <% } %>
 <% }) %>
-<p class="eb-total"><strong><%= EB.totalLabel %>: <%= dayData.total %></strong> <span class="hint">(<%= dayData.used %> used, <%= dayData.given %> given back)</span><br><%= EB.spoonsHeading %>: <%= Math.max(0, dayData.spoonsLeft) %> of <%= EB.dailySpoons %> left<% if (dayData.spoonsLeft < 0) { %>, <%= -dayData.spoonsLeft %> more used than started with<% } %></p>
+<p class="eb-total"><strong><%= EB.totalLabel %>: <%= dayData.total %></strong> <span class="hint">(<%= dayData.used %> used, <%= dayData.given %> given back)</span></p>

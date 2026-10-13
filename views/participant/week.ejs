@@ -11,6 +11,21 @@
   <p><span class="chip not_submitted">Closed</span> This week closed before it was submitted. You can still see what you entered.</p>
 <% } %>
 
+<% if (sc) { var S = content.screening; var r = sc.row; var gaps = r ? [r.tired_score === null, r.severity === null, r.pattern === ''].filter(Boolean).length : 3; %>
+<section class="card" aria-labelledby="sc-title">
+  <h2 id="sc-title"><%= S.name %> (before Session <%= sc.s %>)</h2>
+  <% if (editable) { %>
+    <p>Part of this week. <%= gaps === 0 ? 'All three answered.' : gaps === 3 ? 'Three short questions, not started yet.' : (3 - gaps) + ' of 3 answered.' %></p>
+    <a class="button secondary wide" href="/tracker/screening/<%= sc.s %>"><%= gaps === 3 ? 'Answer the screening questions' : 'Look at or change my answers' %></a>
+  <% } else { %>
+    <p><strong><%= S.tiredQuestion %></strong><br><%= r && r.tired_score !== null ? r.tired_score + ' out of 10' : 'Not answered' %></p>
+    <p><strong><%= S.severityQuestion %></strong><br><%= r && r.severity ? S.severityOptions.filter(function (o) { return o.key === r.severity; })[0].label : 'Not answered' %></p>
+    <p><strong><%= S.patternQuestion %></strong></p>
+    <p class="pre"><%= r && r.pattern ? r.pattern : 'Not answered' %></p>
+  <% } %>
+</section>
+<% } %>
+
 <section class="card" aria-labelledby="days-title">
   <h2 id="days-title" class="visually-hidden">Days</h2>
   <ul class="day-list">

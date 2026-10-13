@@ -247,7 +247,8 @@ details summary { cursor: pointer; font-weight: 600; min-height: 44px; display: 
 .spoon { width: 100%; height: 44px; }
 .spoon ellipse, .spoon path { fill: var(--teal); }
 .spoon.used ellipse, .spoon.used path { fill: #fff; stroke: #8a8580; stroke-width: 1.5; }
-.spoon .cross { stroke: #5a5a5a; stroke-width: 2; }
+.spoon .cross { stroke: #5a5a5a; stroke-width: 2; display: none; }
+.spoon.used .cross { display: inline; }
 .spoons-text { margin: 0 0 .5rem; }
 
 /* ---------- Fatigue Screening ---------- */

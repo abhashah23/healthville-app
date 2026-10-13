@@ -23,7 +23,9 @@ module.exports = {
 
   // Weekly Fatigue and Energy Tracker, from the handout.
   tracker: {
-    name: 'Weekly Fatigue and Energy Tracker',
+    // The handout's title. It includes the Fatigue Screening (page 1), the
+    // three-times-a-day tracker (page 3) and the weekly reflection (page 4).
+    name: 'Weekly Fatigue Tracker',
     timesOfDay: [
       { key: 'morning', label: 'Morning' },
       { key: 'afternoon', label: 'Afternoon' },
@@ -69,12 +71,22 @@ module.exports = {
       },
     },
     commentLabel: 'Comments (optional)',
-    // "Today's Spoons" on the My Spoons handout: 12 spoons to cross off.
-    dailySpoons: 12,
-    spoonsHeading: "Today's spoons",
     totalLabel: 'Daily total',
     totalHint: 'Points used, minus points given back.',
     maxLines: { activity: 40, replenish: 20 },
+  },
+
+  // Daily Spoon Tracker, from "Today's Spoons" on the My Spoons handout
+  // (Module 2 Toolkit): 12 spoons, cross one off for each thing you do today.
+  // Session 2 home practice: the week after Session 2.
+  spoons: {
+    name: 'Daily Spoon Tracker',
+    week: 2,
+    perDay: 12,
+    heading: "Today's Spoons",
+    instruction: 'Cross one off for each thing you do today. Notice when you are running low.',
+    crossOff: 'Cross off a spoon',
+    putBack: 'Put one back',
   },
 
   // Fatigue Screening, before Session 1 and before Session 6.
@@ -82,6 +94,10 @@ module.exports = {
   screening: {
     name: 'Fatigue Screening',
     sessions: [1, 6],
+    // Part of the main tracker. The screening before Session 6 is part of
+    // Week 5 and is submitted with it. The one before Session 1 comes before
+    // Week 1 and is submitted on its own.
+    inWeek: { 6: 5 },
     tiredQuestion: 'How tired have you felt over the last week?',
     tiredLow: '1: No fatigue',
     tiredHigh: '10: Worst possible fatigue',

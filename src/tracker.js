@@ -106,13 +106,42 @@ async function saveReflections(participantId, n, input) {
   return null;
 }
 
+// The Fatigue Screening session that is part of week n, if any.
+function screeningSession(n) {
+  const entry = Object.entries(content.screening.inWeek).find(([, week]) => week === n);
+  return entry ? Number(entry[0]) : null;
+}
+
+// Everything still needed before week n can be submitted, including the
+// Fatigue Screening when it is part of that week.
+async function missingForSubmit(participantId, n, week) {
+  const missing = missingItems(week);
+  const s = screeningSession(n);
+  if (s) {
+    const screening = require('./screening');
+    const row = await screening.get(participantId, s);
+    for (const key of screening.missing(row)) missing.unshift({ kind: 'screening', session: s, key });
+  }
+  return missing;
+}
+
 // Submits the week if everything is filled in. Returns missing items, or [].
+// When the week includes the Fatigue Screening, both are submitted together.
 async function submitWeek(participantId, n) {
   const week = await getWeek(participantId, n);
   if (week.row && week.row.submitted_at) return [];
-  const missing = missingItems(week);
+  const missing = await missingForSubmit(participantId, n, week);
   if (missing.length) return missing;
-  await db.query('UPDATE tracker_weeks SET submitted_at = now() WHERE id = $1 AND submitted_at IS NULL', [week.row.id]);
+  const s = screeningSession(n);
+  await db.transaction(async (c) => {
+    await c.query('UPDATE tracker_weeks SET submitted_at = now() WHERE id = $1 AND submitted_at IS NULL', [week.row.id]);
+    if (s) {
+      await c.query(
+        'UPDATE fatigue_screenings SET submitted_at = now() WHERE participant_id = $1 AND session_number = $2 AND submitted_at IS NULL',
+        [participantId, s]
+      );
+    }
+  });
   return [];
 }
 
@@ -222,6 +251,8 @@ module.exports = {
   saveSlot,
   saveReflections,
   submitWeek,
+  missingForSubmit,
+  screeningSession,
   weekStatus,
   groupGrid,
   groupSummary,

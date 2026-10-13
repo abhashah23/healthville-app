@@ -10,6 +10,13 @@ const { lineChart } = require('../chart');
 const content = require('../content');
 const energy = require('../energy');
 const screening = require('../screening');
+const spoons = require('../spoons');
+
+// The screening session that is part of week n, if any (Session 6 is in Week 5).
+function screeningSessionForWeek(n) {
+  const entry = Object.entries(content.screening.inWeek).find(([, week]) => week === n);
+  return entry ? Number(entry[0]) : null;
+}
 
 const router = express.Router();
 router.use(auth.requireRole('participant'));
@@ -26,6 +33,7 @@ router.use(async (req, res, next) => {
 });
 
 router.use('/energy', require('./energy'));
+router.use('/spoons', require('./spoons'));
 router.use('/screening', require('./screening'));
 
 router.param('n', (req, res, next, value) => {
@@ -90,7 +98,18 @@ router.get('/', async (req, res, next) => {
       const slot = firstIncompleteSlot(week);
       continueUrl = slot ? slotUrl(current.n, slot) : `/tracker/week/${current.n}/reflections`;
       if (slot === null && tracker.missingItems(week).length === 0) continueUrl = `/tracker/week/${current.n}/review`;
+      const scSession = screeningSessionForWeek(current.n);
+      if (scSession) {
+        const row = await screening.get(req.user.id, scSession);
+        current.screening = { s: scSession, done: screening.missing(row).length === 0, started: Boolean(row) };
+        // Like the handout, the screening comes first.
+        if (!current.screening.done) continueUrl = `/tracker/screening/${scSession}`;
+      }
     }
+    const sc1Row = await screening.get(req.user.id, 1);
+    const sc1 = { state: screening.state(req.group, 1), status: screening.status(req.group, 1, sc1Row), closes: screening.closes(req.group, 1) };
+    const spData = await spoons.getSheet(req.user.id);
+    const sp = { state: spoons.state(req.group), status: spoons.status(req.group, spData), daysUsed: spData.daysUsed };
     const ebData = await energy.getSheet(req.user.id);
     const eb = {
       state: energy.state(req.group),
@@ -99,11 +118,6 @@ router.get('/', async (req, res, next) => {
       opens: time.weekOpens(req.group.session1_date, content.energyBalance.week),
       closes: time.weekCloses(req.group.session1_date, content.energyBalance.week),
     };
-    const screenings = [];
-    for (const s of screening.SESSIONS) {
-      const row = await screening.get(req.user.id, s);
-      screenings.push({ s, state: screening.state(req.group, s), status: screening.status(req.group, s, row), closes: screening.closes(req.group, s) });
-    }
     const averages = await tracker.participantAverages(req.user.id);
     const hasChart = averages.some((a) => a.overall !== null);
     res.render('participant/home', {
@@ -115,7 +129,8 @@ router.get('/', async (req, res, next) => {
       chart: hasChart ? lineChart(averages, { title: 'My average fatigue score by week' }) : null,
       nextOpens: weeks.find((w) => w.state === 'upcoming') || null,
       eb,
-      screenings,
+      sp,
+      sc1,
     });
   } catch (err) {
     next(err);
@@ -133,10 +148,12 @@ router.get('/week/:n', async (req, res, next) => {
       });
     }
     const week = await tracker.getWeek(req.user.id, n);
+    const scSession = screeningSessionForWeek(n);
     res.render('participant/week', {
       title: `Week ${n}`,
       n,
       week,
+      sc: scSession ? { s: scSession, row: await screening.get(req.user.id, scSession) } : null,
       editable: canEdit(req, week),
       days: time.weekDays(req.group.session1_date, n),
       closes: time.weekCloses(req.group.session1_date, n),
@@ -247,7 +264,7 @@ router.get('/week/:n/review', async (req, res, next) => {
     res.render('participant/review', {
       title: `Week ${n}, submit`,
       n,
-      missing: tracker.missingItems(week),
+      missing: await tracker.missingForSubmit(req.user.id, n, week),
       days: time.weekDays(req.group.session1_date, n),
       closes: time.weekCloses(req.group.session1_date, n),
       slotUrl,

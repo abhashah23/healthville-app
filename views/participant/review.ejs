@@ -7,7 +7,9 @@
     <p>The week can be submitted once these are done. Your entries so far are saved.</p>
     <ul>
     <% missing.slice(0, 12).forEach(function (m) { %>
-      <% if (m.kind === 'slot') { %>
+      <% if (m.kind === 'screening') { %>
+        <li><a href="/tracker/screening/<%= m.session %>"><%= content.screening.name %>: <%= m.key === 'tired' ? content.screening.tiredQuestion : m.key === 'severity' ? content.screening.severityQuestion : content.screening.patternQuestion %></a></li>
+      <% } else if (m.kind === 'slot') { %>
         <li><a href="<%= slotUrl(n, m) %>"><%= time.formatDay(days[m.day]) %>, <%= timeLabel[m.time].toLowerCase() %></a>:
           <%= m.parts.map(function (p) { return p === 'score' ? 'score' : 'what you were doing'; }).join(' and ') %></li>
       <% } else { %>

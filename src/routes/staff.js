@@ -13,6 +13,7 @@ const tracker = require('../tracker');
 const { lineChart } = require('../chart');
 const energy = require('../energy');
 const screening = require('../screening');
+const spoons = require('../spoons');
 
 const router = express.Router();
 router.use(auth.requireRole('facilitator', 'admin'));
@@ -46,10 +47,12 @@ router.get('/groups/:id', async (req, res, next) => {
     if (!group || !(await access.canSeeGroup(req.user, id))) return notFound(res);
     const ebStatusFor = await energy.groupStatuses(group);
     const scStatusFor = await screening.groupStatuses(group);
+    const spStatusFor = await spoons.groupStatuses(group);
     const grid = (await tracker.groupGrid(group)).map((p) => ({
       ...p,
       eb: ebStatusFor(p.id),
-      sc: screening.SESSIONS.map((s) => scStatusFor(p.id, s)),
+      sp: spStatusFor(p.id),
+      sc1: scStatusFor(p.id, 1),
     }));
     const summary = await tracker.groupSummary(group);
     const ebSubmitted = grid.filter((p) => p.eb === 'submitted').length;
@@ -60,7 +63,8 @@ router.get('/groups/:id', async (req, res, next) => {
       grid,
       summary,
       ebSubmitted,
-      scSubmitted: screening.SESSIONS.map((s, i) => ({ s, n: grid.filter((p) => p.sc[i] === 'submitted').length })),
+      sc1Submitted: grid.filter((p) => p.sc1 === 'submitted').length,
+      spSubmitted: grid.filter((p) => p.sp === 'submitted').length,
       chart: summary.some((s) => s.average !== null)
         ? lineChart(summary.map((s) => ({ week: s.week, overall: s.average })), { title: 'Group average fatigue score by week (submitted weeks only)', series: ['overall'] })
         : null,
@@ -108,6 +112,8 @@ router.get('/participants/:id', async (req, res, next) => {
       const row = await screening.get(participant.id, s);
       screenings.push({ s, row, status: screening.status(group, s, row) });
     }
+    const spData = await spoons.getSheet(participant.id);
+    const sp = { ...spData, status: spoons.status(group, spData), dates: time.weekDays(group.session1_date, require('../content').spoons.week) };
     const averages = await tracker.participantAverages(participant.id);
     await audit.record(req.user, 'view_participant', { subject: participant, groupId: group.id });
     res.render('staff/participant', {
@@ -117,6 +123,7 @@ router.get('/participants/:id', async (req, res, next) => {
       weeks,
       eb,
       screenings,
+      sp,
       averages,
       chart: averages.some((a) => a.overall !== null)
         ? lineChart(averages, { title: 'Average fatigue score by week and time of day (submitted weeks only)' })

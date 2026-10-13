@@ -5,11 +5,6 @@
 <p class="hint"><%= EB.name %></p>
 <% if (added) { %><p class="save-status" role="status">Saved</p><% } %>
 
-<section class="card" aria-labelledby="spoons-title">
-  <h2 id="spoons-title"><%= EB.spoonsHeading %></h2>
-  <%- include('../partials/spoons', { dayData: dd }) %>
-  <p class="hint">You start each day with <%= EB.dailySpoons %>. Activities use spoons. Replenishing activities give them back.</p>
-</section>
 <section class="card eb-summary" aria-label="<%= EB.totalLabel %>">
   <div><span class="hint">Used</span><strong><%= dd.used %></strong></div>
   <div><span class="hint">Given back</span><strong><%= dd.given %></strong></div>
