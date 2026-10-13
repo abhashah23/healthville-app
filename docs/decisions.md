@@ -33,6 +33,18 @@ Newest updates at the top of each section.
 - LMS: MyNuclo (https://healthville.mynuclo.com/). Phase 1 is a link from it.
 - Colours and fonts follow the brief: teal #028090 headings, Poppins.
 
+## Decided (Energy Balance Blueprint, from Abha)
+
+- Added as an extra tracker, from the "Energy Balance Blueprint Worksheet
+  (day at a glance)".
+- The two "Activity" columns on the paper sheet mean the same thing. In the
+  app, each activity is its own line with 1 to 4 points.
+- Filled in on any days the participant chooses, during the week after
+  Session 2.
+- The app shows a daily total: activity points minus replenishing points.
+- Same rules as the weekly tracker: submit once, no changes after, closes at
+  the start of Session 3, staff see it once submitted or closed.
+
 ## Choices made while building (Abha can change these)
 
 - Facilitators do not see a week while it is still in progress. They see it
@@ -42,8 +54,18 @@ Newest updates at the top of each section.
   handout bands are whole numbers only.
 - Participants can fill in any day of the open week, in any order.
 - Participants see the band key from the handout under the score buttons.
+- Energy Balance: comments are per line (the paper sheet has a comments
+  column per row). Up to 40 activities and 20 replenishing activities a day,
+  matching the 20 rows on the paper sheet.
+- Energy Balance: it can be submitted once at least one activity is entered
+  on any day.
 
 ## Open questions
+
+- Energy Balance: what do 1 and 4 mean on the points scale (for example
+  "1 = light, 4 = very draining")? For now the app says "Score 1 to 4".
+- Energy Balance: the paper sheet says replenishing can "add a spoon". The
+  app treats replenishing points as taken off the day's total. Is that right?
 
 - Week 6 has no next session. For now it closes one week after Session 6, at
   1:00 PM ET. Is that right?

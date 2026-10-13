@@ -1,0 +1,26 @@
+<%- include('../partials/head', { narrow: true }) %>
+<% var EB = content.energyBalance; %>
+<p><a href="/tracker/energy">Back to all days</a></p>
+<h1>Submit your <%= EB.name %></h1>
+<% if (!ready) { %>
+  <div class="card">
+    <h2>Nothing to submit yet</h2>
+    <p>Add at least one activity on any day, then come back here.</p>
+    <a class="button secondary" href="/tracker/energy">Choose a day</a>
+  </div>
+<% } else { %>
+  <div class="card">
+    <h2>Your days</h2>
+    <ul class="week-list">
+    <% ebDays.forEach(function (d, i) { var dd = eb.days[i]; if (!dd.count) return; %>
+      <li><span><%= time.formatDay(d) %></span><span><%= EB.totalLabel %>: <strong><%= dd.total %></strong></span></li>
+    <% }) %>
+    </ul>
+    <p>Days with nothing entered are fine. Once you submit, you cannot change this. Your facilitator will then be able to see it.</p>
+    <form method="post" action="/tracker/energy/submit">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button type="submit" class="wide">Submit</button>
+    </form>
+  </div>
+<% } %>
+<%- include('../partials/foot') %>

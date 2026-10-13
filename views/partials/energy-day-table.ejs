@@ -1,0 +1,13 @@
+<% var EB = content.energyBalance; %>
+<% ['activity', 'replenish'].forEach(function (kind) { var lines = dayData[kind]; %>
+  <h4 class="eb-kind"><%= EB.kinds[kind].heading %></h4>
+  <% if (!lines.length) { %><p class="empty">None</p><% } else { %>
+  <ul class="eb-lines">
+    <% lines.forEach(function (l) { %>
+      <li><span class="eb-points" aria-label="<%= kind === 'activity' ? l.points + ' points used' : l.points + ' points given back' %>"><%= kind === 'activity' ? l.points : '−' + l.points %></span>
+        <span><%= l.activity %><% if (l.comment) { %><br><span class="notes"><%= l.comment %></span><% } %></span></li>
+    <% }) %>
+  </ul>
+  <% } %>
+<% }) %>
+<p class="eb-total"><strong><%= EB.totalLabel %>: <%= dayData.total %></strong> <span class="hint">(<%= dayData.used %> used, <%= dayData.given %> given back)</span></p>

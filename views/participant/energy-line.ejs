@@ -1,0 +1,36 @@
+<%- include('../partials/head', { narrow: true }) %>
+<% var EB = content.energyBalance; var k = EB.kinds[kind]; var editing = Boolean(line.id); %>
+<p><a href="/tracker/energy/day/<%= day + 1 %>">Back to <%= time.formatDay(ebDays[day]) %></a></p>
+<h1><%= editing ? 'Change ' + k.activityLabel.toLowerCase() : k.addLabel %></h1>
+<p class="hint"><%= time.formatDay(ebDays[day]) %></p>
+<% if (error) { %><div class="error-box" role="alert"><%= error %></div><% } %>
+<form class="card" method="post" action="<%= editing ? '/tracker/energy/line/' + line.id : '/tracker/energy/day/' + (day + 1) + '/add/' + kind %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="field">
+    <label for="activity"><%= k.activityLabel %></label>
+    <input type="text" id="activity" name="activity" maxlength="<%= limits.activity %>" value="<%= line.activity %>" autocomplete="off">
+  </div>
+  <fieldset aria-describedby="points-hint">
+    <legend><%= k.pointsLabel %></legend>
+    <p class="hint" id="points-hint"><%= k.pointsHint %><% if (EB.pointsScaleNote) { %> <%= EB.pointsScaleNote %><% } %></p>
+    <div class="scores four">
+      <% for (var s = 1; s <= 4; s++) { %>
+        <input type="radio" id="points-<%= s %>" name="points" value="<%= s %>" <%= Number(line.points) === s ? 'checked' : '' %>>
+        <label for="points-<%= s %>"><%= s %></label>
+      <% } %>
+    </div>
+  </fieldset>
+  <div class="field">
+    <label for="comment"><%= EB.commentLabel %></label>
+    <textarea id="comment" name="comment" class="short" maxlength="<%= limits.comment %>"><%= line.comment %></textarea>
+  </div>
+  <div class="actions">
+    <% if (editing) { %>
+      <button type="submit" class="wide">Save</button>
+    <% } else { %>
+      <button type="submit" class="wide">Add</button>
+      <button type="submit" class="secondary wide" name="go" value="another">Add and add another</button>
+    <% } %>
+  </div>
+</form>
+<%- include('../partials/foot') %>

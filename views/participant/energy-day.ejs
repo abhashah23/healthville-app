@@ -1,0 +1,40 @@
+<%- include('../partials/head', { narrow: true }) %>
+<% var EB = content.energyBalance; var dd = eb.days[day]; %>
+<p><a href="/tracker/energy">Back to all days</a></p>
+<h1><%= time.formatDay(ebDays[day]) %></h1>
+<p class="hint"><%= EB.name %></p>
+<% if (added) { %><p class="save-status" role="status">Saved</p><% } %>
+
+<section class="card eb-summary" aria-label="<%= EB.totalLabel %>">
+  <div><span class="hint">Used</span><strong><%= dd.used %></strong></div>
+  <div><span class="hint">Given back</span><strong><%= dd.given %></strong></div>
+  <div><span class="hint"><%= EB.totalLabel %></span><strong><%= dd.total %></strong></div>
+</section>
+<p class="hint"><%= EB.totalHint %></p>
+
+<% ['activity', 'replenish'].forEach(function (kind) { var k = EB.kinds[kind]; var lines = dd[kind]; %>
+<section class="card" aria-labelledby="h-<%= kind %>">
+  <h2 id="h-<%= kind %>"><%= k.heading %></h2>
+  <p class="hint"><%= k.hint %></p>
+  <% if (lines.length) { %>
+  <ul class="eb-lines">
+    <% lines.forEach(function (l) { %>
+    <li>
+      <span class="eb-points" aria-label="<%= l.points %> points"><%= kind === 'activity' ? l.points : '−' + l.points %></span>
+      <span class="eb-line-text"><%= l.activity %><% if (l.comment) { %><br><span class="notes"><%= l.comment %></span><% } %></span>
+      <span class="eb-line-actions">
+        <a href="/tracker/energy/line/<%= l.id %>" aria-label="Change <%= l.activity %>">Change</a>
+        <form method="post" action="/tracker/energy/line/<%= l.id %>/delete">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="link" aria-label="Remove <%= l.activity %>">Remove</button>
+        </form>
+      </span>
+    </li>
+    <% }) %>
+  </ul>
+  <% } %>
+  <a class="button secondary wide" href="/tracker/energy/day/<%= day + 1 %>/add/<%= kind %>"><%= k.addLabel %></a>
+</section>
+<% }) %>
+<div class="actions"><a class="button wide" href="/tracker/energy">Done with this day</a></div>
+<%- include('../partials/foot') %>

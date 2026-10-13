@@ -30,6 +30,18 @@
 </section>
 <% } %>
 
+<% if (eb.state === 'open') { %>
+<section class="card" aria-labelledby="eb-title">
+  <h2 id="eb-title"><%= content.energyBalance.name %></h2>
+  <% if (eb.status === 'submitted') { %>
+    <p>You have submitted it. Thank you.</p>
+  <% } else { %>
+    <p>Session 2 home practice. Fill in any days you like this week. <%= eb.daysUsed ? eb.daysUsed + ' day' + (eb.daysUsed === 1 ? '' : 's') + ' filled in so far.' : '' %></p>
+    <a class="button secondary wide" href="/tracker/energy"><%= eb.daysUsed ? 'Continue' : 'Start' %> the <%= content.energyBalance.name %></a>
+  <% } %>
+</section>
+<% } %>
+
 <%- include('../partials/not-monitored') %>
 
 <section class="card" aria-labelledby="my-weeks">
@@ -45,6 +57,10 @@
       <span class="chip <%= w.status %>"><%= pLabel(w.status) %></span>
     </li>
     <% }) %>
+    <li>
+      <% if (eb.state === 'upcoming') { %><span><%= content.energyBalance.name %></span><% } else { %><a href="/tracker/energy"><%= content.energyBalance.name %></a><% } %>
+      <span class="chip <%= eb.status %>"><%= pLabel(eb.status) %></span>
+    </li>
   </ul>
 </section>
 

@@ -213,3 +213,32 @@ details summary { cursor: pointer; font-weight: 600; min-height: 44px; display: 
 .week-list li:first-child { border-top: none; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------- Energy Balance Blueprint ---------- */
+.scores.four { grid-template-columns: repeat(4, 1fr); }
+.eb-day-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
+.eb-day {
+  display: flex; flex-direction: column; gap: .1rem; min-height: 64px; padding: .6rem .9rem;
+  border: 2px solid #8a8580; border-radius: 12px; background: #fff; color: var(--ink); text-decoration: none;
+}
+.eb-day.used { background: var(--teal-tint); border-color: var(--teal); }
+.eb-day:hover { border-color: var(--ink); color: var(--ink); }
+.eb-day-name { font-weight: 600; }
+.eb-day .hint { margin: 0; }
+.eb-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; text-align: center; }
+.eb-summary strong { display: block; font-size: 1.6rem; color: var(--teal-dark); font-variant-numeric: tabular-nums; }
+.eb-summary .hint { margin: 0; display: block; }
+.eb-lines { list-style: none; padding: 0; margin: 0 0 1rem; }
+.eb-lines li { display: grid; grid-template-columns: 2.6rem 1fr auto; gap: .5rem .75rem; align-items: start; padding: .55rem 0; border-top: 1px solid #e6e1da; }
+.eb-lines li:first-child { border-top: none; }
+.eb-points {
+  display: inline-flex; align-items: center; justify-content: center; width: 2.4rem; height: 2.4rem;
+  border-radius: 999px; background: var(--teal-tint); color: var(--teal-dark); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.eb-line-text { min-width: 0; overflow-wrap: anywhere; }
+.eb-line-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 0; font-size: .9rem; }
+.eb-line-actions a { min-height: 44px; display: inline-flex; align-items: center; }
+.eb-line-actions form { margin: 0; }
+.eb-lines .notes, .notes { color: var(--muted); font-size: .9rem; }
+.eb-kind { margin: .75rem 0 .25rem; font-size: .95rem; color: var(--ink); }
+.eb-total { margin-top: .5rem; }

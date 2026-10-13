@@ -4,7 +4,7 @@ A simple app where participants in Healthville's six-session group coaching
 program, "Managing and Coping with Cancer-Related Fatigue", fill in their
 weekly tracker, and where Healthville staff can see what has been filled in.
 
-**Status: Phase 1 built and working with made-up data. Not yet approved for
+**Status: Phase 1 and the Energy Balance Blueprint built and working with made-up data. Not yet approved for
 real participants.** See "Needs approval" below.
 
 ## What it does (Phase 1)
@@ -18,11 +18,21 @@ real participants.** See "Needs approval" below.
 - Answer three weekly reflection questions, then submit the week once.
 - See their past weeks and a chart of their own averages.
 
+**Energy Balance Blueprint** (Session 2 home practice, from the worksheet):
+- Open during the week after Session 2. Participants fill in any days they like.
+- For each day, they add activities that used energy and replenishing
+  activities that gave energy back, each with points (spoons) from 1 to 4
+  and an optional comment.
+- The app shows a daily total: points used, minus points given back.
+- Same rules as the weekly tracker: submit once, no changes after, closes when
+  Session 3 starts, and staff see it once it is submitted or closed.
+
 **Facilitators** see only the groups they are assigned to:
 - A grid of who has submitted which week.
 - A participant page with their entries, severity bands, and a chart across
   the six weeks (whole day and by time of day).
 - A group summary: how many submitted each week and the group average.
+- Each participant's Energy Balance Blueprint, day by day, with daily totals.
 
 **Admins** (Abha, Rohit, Dr. Howell) see every group and can:
 - Add groups, participants, facilitators and admins.
@@ -116,6 +126,14 @@ To deploy, see [docs/DEPLOY.md](docs/DEPLOY.md).
 9. Check "My weeks" and the chart on the home page.
 10. Try it with your phone's text size turned up, and with a screen reader
     (VoiceOver or TalkBack) if you can.
+
+**Energy Balance Blueprint (as a participant, in the week after Session 2)**
+1. On the home page, tap "Start the Energy Balance Blueprint".
+2. Choose a day. Add two activities and one replenishing activity.
+3. Check the daily total: points used minus points given back.
+4. Change one line and remove another.
+5. Try to submit with nothing added. Then add an activity and submit.
+6. Check that nothing can be changed after submitting.
 
 **As a facilitator**
 1. Sign in as `facilitator@demo.healthville.test`.

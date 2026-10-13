@@ -42,6 +42,38 @@ module.exports = {
     ],
   },
 
+  // Energy Balance Blueprint Worksheet (day at a glance), from the worksheet.
+  // Session 2 home practice: any days of the week after Session 2.
+  energyBalance: {
+    name: 'Energy Balance Blueprint',
+    fullName: 'Energy Balance Blueprint Worksheet (day at a glance)',
+    week: 2,
+    kinds: {
+      activity: {
+        heading: 'Activities',
+        hint: 'Things you did that used energy.',
+        addLabel: 'Add an activity',
+        activityLabel: 'Activity',
+        pointsLabel: 'Points (spoons) used',
+        pointsHint: 'Score 1 to 4.',
+      },
+      replenish: {
+        heading: 'Replenishing activities',
+        hint: 'Things that gave you energy back. These points are taken off your total.',
+        addLabel: 'Add a replenishing activity',
+        activityLabel: 'Replenishing activity',
+        pointsLabel: 'Points (spoons) given back',
+        pointsHint: 'Score 1 to 4. Taken off your total.',
+      },
+    },
+    commentLabel: 'Comments (optional)',
+    // PLACEHOLDER pending Abha: what 1 and 4 mean on the points scale.
+    pointsScaleNote: '',
+    totalLabel: 'Daily total',
+    totalHint: 'Points used, minus points given back.',
+    maxLines: { activity: 40, replenish: 20 },
+  },
+
   // Score bands from the handout.
   bands: [
     { key: 'mild', label: 'Mild', min: 0, max: 3 },

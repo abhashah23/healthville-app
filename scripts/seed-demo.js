@@ -73,6 +73,29 @@ async function main() {
       }
     }
   }
+  // Energy Balance Blueprint (week after Session 2) for the first three people.
+  const people = await db.many(`SELECT id FROM users WHERE group_id = $1 AND role = 'participant' ORDER BY id LIMIT 3`, [group.id]);
+  for (const [i, person] of people.entries()) {
+    const sheet = await db.one(
+      `INSERT INTO energy_sheets (participant_id, week_number, submitted_at) VALUES ($1, 2, $2) RETURNING *`,
+      [person.id, i < 2 ? new Date() : null]
+    );
+    for (const d of [0, 2, 5]) {
+      for (const [kind, activity, points, comment] of [
+        ['activity', 'Shower and get dressed', 2, ''],
+        ['activity', 'Groceries', 3, 'Busy store'],
+        ['activity', 'Cooking dinner', 2, ''],
+        ['replenish', 'Nap', 3, ''],
+        ['replenish', 'Sat in the garden', 1, 'Felt calmer'],
+      ]) {
+        await db.query(
+          'INSERT INTO energy_lines (sheet_id, day_index, kind, activity, points, comment) VALUES ($1, $2, $3, $4, $5, $6)',
+          [sheet.id, d, kind, activity, points, comment]
+        );
+      }
+    }
+  }
+
   console.log(`Demo data ready. Session 1 for the demo groups: ${session1}.`);
   console.log('Sign in with any of these (the link prints in the server log):');
   console.log(`  participant@demo.healthville.test  (participant)`);

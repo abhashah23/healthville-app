@@ -11,6 +11,7 @@ const config = require('../config');
 const time = require('../time');
 const tracker = require('../tracker');
 const { lineChart } = require('../chart');
+const energy = require('../energy');
 
 const router = express.Router();
 router.use(auth.requireRole('facilitator', 'admin'));
@@ -42,14 +43,17 @@ router.get('/groups/:id', async (req, res, next) => {
     if (!Number.isInteger(id)) return notFound(res);
     const group = await db.one('SELECT * FROM groups WHERE id = $1', [id]);
     if (!group || !(await access.canSeeGroup(req.user, id))) return notFound(res);
-    const grid = await tracker.groupGrid(group);
+    const ebStatusFor = await energy.groupStatuses(group);
+    const grid = (await tracker.groupGrid(group)).map((p) => ({ ...p, eb: ebStatusFor(p.id) }));
     const summary = await tracker.groupSummary(group);
+    const ebSubmitted = grid.filter((p) => p.eb === 'submitted').length;
     await audit.record(req.user, 'view_group', { groupId: group.id });
     res.render('staff/group', {
       title: group.name,
       group,
       grid,
       summary,
+      ebSubmitted,
       chart: summary.some((s) => s.average !== null)
         ? lineChart(summary.map((s) => ({ week: s.week, overall: s.average })), { title: 'Group average fatigue score by week (submitted weeks only)', series: ['overall'] })
         : null,
@@ -85,6 +89,13 @@ router.get('/participants/:id', async (req, res, next) => {
         hasData: started > 0 || Boolean(week.row && tracker.REFLECTIONS.some((k) => week.row[k] !== '')),
       });
     }
+    const ebData = await energy.getSheet(participant.id);
+    const eb = {
+      ...ebData,
+      status: energy.status(group, ebData),
+      days: ebData.days,
+      dates: time.weekDays(group.session1_date, require('../content').energyBalance.week),
+    };
     const averages = await tracker.participantAverages(participant.id);
     await audit.record(req.user, 'view_participant', { subject: participant, groupId: group.id });
     res.render('staff/participant', {
@@ -92,6 +103,7 @@ router.get('/participants/:id', async (req, res, next) => {
       participant,
       group,
       weeks,
+      eb,
       averages,
       chart: averages.some((a) => a.overall !== null)
         ? lineChart(averages, { title: 'Average fatigue score by week and time of day (submitted weeks only)' })

@@ -21,6 +21,21 @@
 </section>
 <% } %>
 
+<section class="card" aria-labelledby="eb-title">
+  <h2 id="eb-title"><%= content.energyBalance.name %> <%- include('../partials/status', { status: eb.status }) %></h2>
+  <% if (eb.status === 'submitted' || eb.status === 'not_submitted') { %>
+    <% if (eb.status === 'submitted') { %><p class="hint">Submitted <%= time.formatTimestamp(eb.sheet.submitted_at) %>.</p><% } else { %><p class="hint">Not submitted. This is what was entered before it closed.</p><% } %>
+    <% var anyDay = false; eb.dates.forEach(function (d, i) { var dd = eb.days[i]; if (!dd.count) return; anyDay = true; %>
+      <div class="entry-day">
+        <h3><%= time.formatDay(d) %></h3>
+        <%- include('../partials/energy-day-table', { dayData: dd }) %>
+      </div>
+    <% }); if (!anyDay) { %><p class="empty">Nothing entered.</p><% } %>
+  <% } else if (eb.status === 'in_progress') { %>
+    <p class="hint">Entries appear once it is submitted, or once it closes at the start of Session <%= content.energyBalance.week + 1 %>.</p>
+  <% } %>
+</section>
+
 <% var shown = weeks.filter(function (w) { return w.hasData && w.status !== 'in_progress'; }); %>
 <% if (shown.length) { %><h2>Weekly entries</h2><% } %>
 <% shown.forEach(function (w, idx) { %>
