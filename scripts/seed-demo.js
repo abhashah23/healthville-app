@@ -73,34 +73,28 @@ async function main() {
       }
     }
   }
-  // Fatigue Screening before Session 1 for everyone but the last person.
   const all = await db.many(`SELECT id FROM users WHERE group_id = $1 AND role = 'participant' ORDER BY id`, [group.id]);
-  const severities = ['moderate', 'severe', 'mild', 'moderate'];
-  for (const [i, person] of all.slice(0, 4).entries()) {
-    await db.query(
-      `INSERT INTO fatigue_screenings (participant_id, session_number, tired_score, severity, pattern, submitted_at)
-       VALUES ($1, 1, $2, $3, $4, now())`,
-      [person.id, 5 + (i % 3), severities[i], 'Worst in the late afternoon. Better after a short rest. Busy days make it worse. It stops me gardening, seeing friends and cooking.']
-    );
-  }
+  // Weekly questions for the submitted weeks.
+  await db.query(
+    `UPDATE tracker_weeks w SET tired_score = 5 + (w.participant_id % 3), severity = (ARRAY['moderate','severe','mild'])[1 + w.participant_id % 3],
+       pattern = 'Worst in the late afternoon. Better after a short rest. Busy days make it worse. It stops me gardening, seeing friends and cooking.'
+     FROM users u WHERE u.id = w.participant_id AND u.group_id = $1 AND w.submitted_at IS NOT NULL`,
+    [group.id]
+  );
 
-  // Daily Spoon Tracker (week after Session 2) for the first four people.
-  for (const [i, person] of all.slice(0, 4).entries()) {
-    const sheet = await db.one(
-      `INSERT INTO spoon_sheets (participant_id, week_number, submitted_at) VALUES ($1, 2, $2) RETURNING *`,
-      [person.id, i < 3 ? new Date() : null]
-    );
-    for (const [d, used] of [[0, 9], [1, 11], [3, 7], [5, 12]]) {
-      await db.query('INSERT INTO spoon_days (sheet_id, day_index, used) VALUES ($1, $2, $3)', [sheet.id, d, used]);
+  // Spoon Tracker (opens on the day of Session 2) for the first four people.
+  for (const person of all.slice(0, 4)) {
+    const sheet = await db.one(`INSERT INTO spoon_sheets (participant_id, week_number) VALUES ($1, 2) RETURNING *`, [person.id]);
+    for (const [d, crossed] of [[0, 511], [1, 2047], [3, 127], [5, 4095]]) {
+      await db.query('INSERT INTO spoon_days (sheet_id, day_index, crossed) VALUES ($1, $2, $3)', [sheet.id, d, crossed]);
     }
   }
 
-  // Energy Balance Blueprint (week after Session 2) for the first three people.
-  const people = await db.many(`SELECT id FROM users WHERE group_id = $1 AND role = 'participant' ORDER BY id LIMIT 3`, [group.id]);
-  for (const [i, person] of people.entries()) {
+  // Energy Balance Blueprint (opens on the day of Session 3) for the first three people.
+  for (const person of all.slice(0, 3)) {
     const sheet = await db.one(
-      `INSERT INTO energy_sheets (participant_id, week_number, submitted_at) VALUES ($1, 2, $2) RETURNING *`,
-      [person.id, i < 2 ? new Date() : null]
+      `INSERT INTO energy_sheets (participant_id, week_number, submitted_at) VALUES ($1, 3, $2) RETURNING *`,
+      [person.id, null]
     );
     for (const d of [0, 2, 5]) {
       for (const [kind, activity, points, comment] of [

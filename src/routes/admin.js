@@ -32,8 +32,8 @@ function checkGroupInput(body) {
   const date = String(body.session1_date || '').trim();
   const dt = DateTime.fromISO(date, { zone: config.sessionTimeZone });
   if (!name) return { error: 'Please give the group a name.' };
-  if (!dt.isValid) return { error: 'Please enter the date of Session 1.' };
-  if (dt.weekday !== 4) return { error: 'Session 1 must be on a Thursday.' };
+  if (!dt.isValid) return { error: 'Please enter the start date.' };
+  if (dt.weekday !== 4) return { error: 'The start date must be a Thursday.' };
   return { name, date };
 }
 

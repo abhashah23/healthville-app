@@ -69,9 +69,22 @@ test('participant: autosave, required fields, submit once, no changes after', as
   const review = await agent.get('/tracker/week/1/review');
   assert.match(review.text, /what you were doing/);
 
-  // All slots but no reflections: still not allowed.
+  // All slots but no weekly questions: still not allowed.
   await h.fillWeek(p.id, 1, { reflections: false });
-  assert.strictEqual((await tracker.submitWeek(p.id, 1)).length, 3);
+  const gaps = await tracker.submitWeek(p.id, 1);
+  assert.deepStrictEqual(gaps.map((g) => g.key), ['tired', 'severity', 'pattern', 'reflection_most_fatigued', 'reflection_biggest_impact', 'reflection_one_change']);
+  const reviewAll = await agent.get('/tracker/week/1/review');
+  assert.match(reviewAll.text, /How tired have you felt over the last week\?/);
+
+  // The weekly questions follow the screenshot and save as you go.
+  const reflect = await agent.get('/tracker/week/1/reflections');
+  assert.match(reflect.text, /1: No fatigue/);
+  assert.match(reflect.text, /Very mild/);
+  assert.match(reflect.text, /Three things fatigue prevents me from doing/);
+  const partial = await agent.post('/tracker/week/1/reflections').set('X-CSRF-Token', csrf).send({ tired_score: 7, severity: 'very_mild' });
+  assert.deepStrictEqual(partial.body, { ok: true, error: null });
+  const badTired = await agent.post('/tracker/week/1/reflections').set('X-CSRF-Token', csrf).send({ tired_score: 0 });
+  assert.strictEqual(badTired.status, 400);
 
   await h.fillWeek(p.id, 1);
   const done = await agent.post('/tracker/week/1/submit').type('form').send({ _csrf: csrf });

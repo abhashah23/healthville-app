@@ -2,11 +2,11 @@
 <% var EB = content.energyBalance; var submitted = eb.sheet && eb.sheet.submitted_at; %>
 <p><a href="/tracker">Back to my tracker</a></p>
 <h1><%= EB.name %></h1>
-<p class="hint"><%= EB.fullName %>. Session 2 home practice.</p>
+<p class="hint"><%= EB.fullName %></p>
 <% if (submitted) { %>
   <p><span class="chip submitted">Submitted</span> on <%= time.formatTimestamp(eb.sheet.submitted_at) %>. It cannot be changed now.</p>
 <% } else if (ebEditable) { %>
-  <p>Fill in any days you like this week. For each day, add the activities that used energy and the ones that gave energy back, with points from 1 to 4.</p>
+  <p>Fill in any days you like. For each day, add the activities that used energy and the ones that gave energy back, with points from 1 to 4.</p>
   <p class="hint">This closes <%- include('../partials/deadline', { at: ebCloses }) %>. Your facilitator sees it once you submit, or once it closes.</p>
 <% } else { %>
   <p><span class="chip not_submitted">Closed</span> This closed before it was submitted. You can still see what you entered.</p>

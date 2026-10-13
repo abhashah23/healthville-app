@@ -23,8 +23,7 @@ module.exports = {
 
   // Weekly Fatigue and Energy Tracker, from the handout.
   tracker: {
-    // The handout's title. It includes the Fatigue Screening (page 1), the
-    // three-times-a-day tracker (page 3) and the weekly reflection (page 4).
+    // The handout's title.
     name: 'Weekly Fatigue Tracker',
     timesOfDay: [
       { key: 'morning', label: 'Morning' },
@@ -38,6 +37,28 @@ module.exports = {
     // Column heading on the handout: "What I Was Doing".
     activityLabel: 'What I was doing',
     notesLabel: 'Notes or patterns (optional)',
+    // Asked once a week, together with the reflection. Wording and options
+    // follow the LMS screenshot (Abha: "follow the screenshots").
+    weekly: {
+      tiredQuestion: 'How tired have you felt over the last week?',
+      tiredLow: '1: No fatigue',
+      tiredHigh: '10: Worst possible fatigue',
+      severityQuestion: 'Your severity level',
+      severityOptions: [
+        { key: 'severe', label: 'Severe' },
+        { key: 'moderate', label: 'Moderate' },
+        { key: 'mild', label: 'Mild' },
+        { key: 'very_mild', label: 'Very mild' },
+        { key: 'none', label: 'None' },
+      ],
+      patternQuestion: 'Your Fatigue Pattern',
+      patternPrompts: [
+        'My fatigue tends to be worst at:',
+        'My fatigue is better when:',
+        'Things that make it worse:',
+        'Three things fatigue prevents me from doing:',
+      ],
+    },
     reflections: [
       { key: 'reflection_most_fatigued', label: 'When did I feel most fatigued this week?' },
       { key: 'reflection_biggest_impact', label: 'Which activity had the biggest impact on my energy?' },
@@ -46,11 +67,12 @@ module.exports = {
   },
 
   // Energy Balance Blueprint Worksheet (day at a glance), from the worksheet.
-  // Session 2 home practice: any days of the week after Session 2.
+  // Opens on the day of Session 3, for that week. Participants are not shown
+  // week or session numbers for this tracker.
   energyBalance: {
     name: 'Energy Balance Blueprint',
     fullName: 'Energy Balance Blueprint Worksheet (day at a glance)',
-    week: 2,
+    week: 3,
     kinds: {
       activity: {
         heading: 'Activities',
@@ -76,47 +98,15 @@ module.exports = {
     maxLines: { activity: 40, replenish: 20 },
   },
 
-  // Daily Spoon Tracker, from "Today's Spoons" on the My Spoons handout
-  // (Module 2 Toolkit): 12 spoons, cross one off for each thing you do today.
-  // Session 2 home practice: the week after Session 2.
+  // Spoon Tracker: "Today's Spoons" on the My Spoons handout. Just 12 spoons
+  // to cross off. Opens on the day of Session 2, for that week. Participants
+  // are not shown week or session numbers for this tracker.
   spoons: {
-    name: 'Daily Spoon Tracker',
+    name: 'Spoon Tracker',
     week: 2,
     perDay: 12,
     heading: "Today's Spoons",
     instruction: 'Cross one off for each thing you do today. Notice when you are running low.',
-    crossOff: 'Cross off a spoon',
-    putBack: 'Put one back',
-  },
-
-  // Fatigue Screening, before Session 1 and before Session 6.
-  // Questions and options follow the LMS screenshot exactly.
-  screening: {
-    name: 'Fatigue Screening',
-    sessions: [1, 6],
-    // Part of the main tracker. The screening before Session 6 is part of
-    // Week 5 and is submitted with it. The one before Session 1 comes before
-    // Week 1 and is submitted on its own.
-    inWeek: { 6: 5 },
-    tiredQuestion: 'How tired have you felt over the last week?',
-    tiredLow: '1: No fatigue',
-    tiredHigh: '10: Worst possible fatigue',
-    severityQuestion: 'Your severity level',
-    severityOptions: [
-      { key: 'severe', label: 'Severe' },
-      { key: 'moderate', label: 'Moderate' },
-      { key: 'mild', label: 'Mild' },
-      { key: 'very_mild', label: 'Very mild' },
-      { key: 'none', label: 'None' },
-    ],
-    patternQuestion: 'Your Fatigue Pattern',
-    patternPrompts: [
-      'My fatigue tends to be worst at:',
-      'My fatigue is better when:',
-      'Things that make it worse:',
-      // The screenshot reads "prevents me doing from"; wording from the handout.
-      'Three things fatigue prevents me from doing:',
-    ],
   },
 
   // Score bands from the handout.

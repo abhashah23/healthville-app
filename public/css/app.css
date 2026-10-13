@@ -268,3 +268,9 @@ details summary { cursor: pointer; font-weight: 600; min-height: 44px; display: 
 @media (min-width: 46rem) { .sc-compare { grid-template-columns: 1fr 1fr; } }
 .sc-col { min-width: 0; }
 .sc-col h3 { margin-top: 0; }
+.spoon-buttons { display: grid; grid-template-columns: repeat(6, 1fr); gap: .5rem; margin: .5rem 0 .75rem; }
+@media (min-width: 34rem) { .spoon-buttons { grid-template-columns: repeat(12, 1fr); } }
+.spoon-btn { min-height: 72px; padding: .3rem; border-radius: 12px; background: #fff; border: 2px solid #8a8580; }
+.spoon-btn:hover { background: var(--teal-tint); border-color: var(--teal); }
+.spoon-btn .spoon { height: 56px; }
+.spoon-btn[aria-pressed="true"] { background: #f2f0ec; }

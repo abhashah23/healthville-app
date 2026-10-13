@@ -1,9 +1,34 @@
 <%- include('../partials/head', { narrow: true }) %>
 <p><a href="/tracker/week/<%= n %>">Back to week <%= n %></a></p>
 <h1>Week <%= n %> reflection</h1>
-<p class="hint">All three are needed before you submit the week. Short answers are fine.</p>
+<p class="hint">All of these are needed before you submit the week. Short answers are fine.</p>
 <form class="card" method="post" action="/tracker/week/<%= n %>/reflections" data-autosave data-draft-key="hv-w<%= n %>-reflect-u<%= user.id %>">
   <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <% var W = content.tracker.weekly; var r0 = week.row || { tired_score: null, severity: null, pattern: '' }; %>
+  <fieldset aria-describedby="tired-hint">
+    <legend><%= W.tiredQuestion %></legend>
+    <p class="hint" id="tired-hint"><%= W.tiredLow %>. <%= W.tiredHigh %>.</p>
+    <div class="scores ten">
+      <% for (var t = 1; t <= 10; t++) { %>
+        <input type="radio" id="tired-<%= t %>" name="tired_score" value="<%= t %>" <%= r0.tired_score === t ? 'checked' : '' %>>
+        <label for="tired-<%= t %>"><%= t %></label>
+      <% } %>
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend><%= W.severityQuestion %></legend>
+    <div class="choices">
+      <% W.severityOptions.forEach(function (o) { %>
+        <input type="radio" id="sev-<%= o.key %>" name="severity" value="<%= o.key %>" <%= r0.severity === o.key ? 'checked' : '' %>>
+        <label for="sev-<%= o.key %>"><%= o.label %></label>
+      <% }) %>
+    </div>
+  </fieldset>
+  <div class="field">
+    <label for="pattern"><%= W.patternQuestion %></label>
+    <ul class="prompts" id="pattern-prompts"><% W.patternPrompts.forEach(function (p) { %><li><%= p %></li><% }) %></ul>
+    <textarea id="pattern" name="pattern" class="tall" maxlength="<%= limits.pattern %>" aria-describedby="pattern-prompts"><%= r0.pattern %></textarea>
+  </div>
   <% content.tracker.reflections.forEach(function (r) { %>
   <div class="field">
     <label for="<%= r.key %>"><%= r.label %></label>

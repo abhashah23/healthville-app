@@ -4,7 +4,7 @@ A simple app where participants in Healthville's six-session group coaching
 program, "Managing and Coping with Cancer-Related Fatigue", fill in their
 weekly tracker, and where Healthville staff can see what has been filled in.
 
-**Status: the Weekly Fatigue Tracker (with the Fatigue Screening), the Daily Spoon Tracker and the Energy Balance Blueprint built and working with made-up data. Not yet approved for
+**Status: the Weekly Fatigue Tracker, the Spoon Tracker and the Energy Balance Blueprint built and working with made-up data. Not yet approved for
 real participants.** See "Needs approval" below.
 
 ## What it does (Phase 1)
@@ -18,37 +18,31 @@ real participants.** See "Needs approval" below.
 - Answer three weekly reflection questions, then submit the week once.
 - See their past weeks and a chart of their own averages.
 
-**Energy Balance Blueprint** (Session 2 home practice, from the worksheet):
-- Open during the week after Session 2. Participants fill in any days they like.
-- For each day, they add activities that used energy and replenishing
-  activities that gave energy back, each with points (spoons) from 1 to 4
-  and an optional comment.
-- The app shows a daily total: points used, minus points given back.
-- Same rules as the weekly tracker: submit once, no changes after, closes when
-  Session 3 starts, and staff see it once it is submitted or closed.
+**Weekly questions** (every week, with the weekly reflection, following the
+LMS screenshot): How tired have you felt over the last week? (1 to 10), Your
+severity level (Severe, Moderate, Mild, Very mild, None), Your Fatigue
+Pattern (one box). All required before the week is submitted.
 
-**Fatigue Screening**, part of the Weekly Fatigue Tracker (page 1 of the
-handout), following the LMS screenshot:
-- How tired have you felt over the last week? (1 to 10), Your severity level
-  (Severe, Moderate, Mild, Very mild, None), Your Fatigue Pattern (one box).
-- Before Session 1: the first step of the tracker, open the week before
-  Session 1 and submitted on its own.
-- Before Session 6: part of Week 5. It comes first in that week and is
-  submitted together with the week.
+**Spoon Tracker** ("Today's Spoons" on the My Spoons handout):
+- Just 12 spoons for today. Tap a spoon to cross it off; tap again to undo.
+- Opens on the day of Session 2 and stays open for that week. Nothing to
+  submit; staff see the days as they are filled in.
+- Participants are not shown any week or session numbers.
 
-**Daily Spoon Tracker** (Session 2 home practice, "Today's Spoons" on the My
-Spoons handout):
-- Open during the week after Session 2. Participants fill in any days.
-- Each day starts with 12 spoons. "Cross off a spoon" for each thing done,
-  "Put one back" to undo.
-- Submit once, no changes after, closes when Session 3 starts.
+**Energy Balance Blueprint** (from the worksheet):
+- Opens on the day of Session 3 and stays open for that week.
+  Participants fill in any days they like. No week or session numbers shown.
+- For each day, activities that used energy and replenishing activities
+  that gave energy back, each with points (spoons) from 1 to 4 and an
+  optional comment. The app shows a daily total: used minus given back.
+- Submit once, no changes after. Staff see it once submitted or closed.
 
 **Facilitators** see only the groups they are assigned to:
 - A grid of who has submitted which week.
 - A participant page with their entries, severity bands, and a chart across
   the six weeks (whole day and by time of day).
 - A group summary: how many submitted each week and the group average.
-- Each participant's Energy Balance Blueprint, day by day, with daily totals.
+- Each participant's Spoon Tracker days and Energy Balance Blueprint.
 
 **Admins** (Abha, Rohit, Dr. Howell) see every group and can:
 - Add groups, participants, facilitators and admins.
@@ -143,26 +137,20 @@ To deploy, see [docs/DEPLOY.md](docs/DEPLOY.md).
 10. Try it with your phone's text size turned up, and with a screen reader
     (VoiceOver or TalkBack) if you can.
 
-**Energy Balance Blueprint (as a participant, in the week after Session 2)**
-1. On the home page, tap "Start the Energy Balance Blueprint".
-2. Choose a day. Add two activities and one replenishing activity.
-3. Check the daily total: points used minus points given back.
-4. Change one line and remove another.
-5. Try to submit with nothing added. Then add an activity and submit.
-6. Check that nothing can be changed after submitting.
+**Weekly questions (as a participant)**
+1. Open the week's reflection. Answer how tired, severity level and fatigue
+   pattern, then the three reflection questions.
+2. Try to submit with one left empty. The review page should list it.
 
-**Fatigue Screening (as a participant)**
-1. In the week before Session 1, the home page says "Before Session 1, start
-   with the Fatigue Screening". Answer the three questions and submit.
-2. In Week 5, the screening comes first. Try to submit Week 5 without it:
-   the review page should list the screening questions.
-3. Fill it in and submit Week 5. Both are submitted together.
+**Spoon Tracker (as a participant, from the day of Session 2)**
+1. On the home page, tap "Cross off today's spoons".
+2. Tap a few spoons to cross them off. Tap one again to put it back.
+3. Check there is no mention of a week or session.
 
-**Daily Spoon Tracker (as a participant, in the week after Session 2)**
-1. Tap "Start the Daily Spoon Tracker" and choose a day.
-2. Tap "Cross off a spoon" a few times, then "Put one back".
-3. Try to cross off more than 12. It should stop at 12.
-4. Submit, and check it cannot be changed.
+**Energy Balance Blueprint (as a participant, from the day of Session 3)**
+1. Tap "Start the Energy Balance Blueprint" and choose a day.
+2. Add two activities and one replenishing activity. Check the daily total.
+3. Change one line and remove another. Submit, and check it is locked.
 
 **As a facilitator**
 1. Sign in as `facilitator@demo.healthville.test`.

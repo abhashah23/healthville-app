@@ -6,7 +6,7 @@
 <% groups.forEach(function (g) { %>
   <div class="card">
     <h2><a href="/staff/groups/<%= g.id %>"><%= g.name %></a></h2>
-    <p>Session 1: <%= time.formatDay(time.sessionDay(g.session1_date, 1)) %>. <%= g.participants %> participant<%= g.participants === 1 ? '' : 's' %>.</p>
+    <p>Starts <%= time.formatDay(time.sessionDay(g.session1_date, 1)) %>. <%= g.participants %> participant<%= g.participants === 1 ? '' : 's' %>.</p>
   </div>
 <% }) %>
 <%- include('../partials/foot') %>

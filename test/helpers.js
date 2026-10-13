@@ -58,6 +58,9 @@ async function fillWeek(userId, n, { reflections = true } = {}) {
   }
   if (reflections) {
     await tracker.saveReflections(userId, n, {
+      tired_score: 6,
+      severity: 'moderate',
+      pattern: 'Worst in the afternoon',
       reflection_most_fatigued: 'a',
       reflection_biggest_impact: 'b',
       reflection_one_change: 'c',

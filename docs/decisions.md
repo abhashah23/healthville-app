@@ -39,8 +39,8 @@ Newest updates at the top of each section.
   (day at a glance)".
 - The two "Activity" columns on the paper sheet mean the same thing. In the
   app, each activity is its own line with 1 to 4 points.
-- Filled in on any days the participant chooses, during the week after
-  Session 2.
+- Filled in on any days the participant chooses, from the day of Session 3
+  (updated by Abha; it was the week after Session 2 before).
 - The app shows a daily total: activity points minus replenishing points.
 - Same rules as the weekly tracker: submit once, no changes after, closes at
   the start of Session 3, staff see it once submitted or closed.
@@ -54,27 +54,21 @@ Newest updates at the top of each section.
 - Weekly tracker scale words (Abha, yes): "0 = No fatigue",
   "10 = Worst possible fatigue", from page 1 of the handout.
 - Week still starts on Thursday (session day), not Monday as on paper.
-- Daily Spoon Tracker: same rules as the other trackers (submit once, closes
-  at Session 3, staff see it once submitted or closed). It can be submitted
-  once any day has been opened and saved. A day stops at 12 spoons.
+- Spoon Tracker: open for the 7 days starting on the day of Session 2. Each
+  spoon is tapped to cross off or put back. Nothing to submit; staff see the
+  days straight away. Participants outside Eastern Time see their own today.
 
-## Decided (Fatigue Screening, from Abha)
+## Decided (Abha, latest)
 
-- Done before Session 1 and before Session 6 only. Linked to the participant
-  so the facilitator can use it. This is separate from the Program Evaluation
-  Survey, which stays code-only and is still Phase 3.
-- Follows the LMS screenshot: 1 to 10 scale, five severity levels (Severe,
-  Moderate, Mild, Very mild, None), one box for the fatigue pattern.
-- All three answers are required to submit.
-
-## Decided (Abha, restructure)
-
-- The Fatigue Screening is part of the main Weekly Fatigue Tracker, not a
-  separate tracker. Before Session 1 it is the tracker's first step. Before
-  Session 6 it is part of Week 5 and is submitted with that week.
-- The Daily Spoon Tracker ("Today's Spoons", 12 a day) and the Energy
-  Balance Blueprint are two separate trackers. Spoons were taken out of the
-  Energy Balance Blueprint.
+- There is no separate Fatigue Screening. Its three questions (how tired
+  over the last week 1 to 10, severity level with five options, fatigue
+  pattern in one box) are part of every week of the Weekly Fatigue Tracker,
+  asked with the weekly reflection, and required to submit the week.
+- Spoon Tracker: from the day of Session 2. Just crossing off 12 spoons.
+- Energy Balance Blueprint: from the day of Session 3.
+- Participants never see week or session numbers, except the Weekly Fatigue
+  Tracker's week numbers. Staff pages show a group's start date instead of
+  "Session 1".
 
 ## Choices made while building (Abha can change these)
 
@@ -90,15 +84,9 @@ Newest updates at the top of each section.
   matching the 20 rows on the paper sheet.
 - Energy Balance: it can be submitted once at least one activity is entered
   on any day.
-- The Week 5 screening comes first in that week, like page 1 of the handout.
 
 ## Open questions
 
-- Fatigue Screening: it opens one week before each session. Is that early
-  enough, especially for people who join just before Session 1?
-- Fatigue Screening: the screenshot's last prompt reads "Three things
-  fatigue prevents me doing from". The app uses the handout wording,
-  "Three things fatigue prevents me from doing". OK?
 
 
 - Week 6 has no next session. For now it closes one week after Session 6, at

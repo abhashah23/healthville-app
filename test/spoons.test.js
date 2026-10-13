@@ -16,68 +16,53 @@ test.after(async () => {
   await h.db.pool.end();
 });
 
-test('spoon tracker: its own tracker, 12 a day, cross off and put back', async () => {
-  const group = await h.makeGroup('P1', 2);
+test('spoon tracker: just 12 spoons to cross off for today', async () => {
+  const group = await h.makeGroup('P1', 2); // opens on the day of Session 2
   const p = await h.makeUser('participant', { groupId: group.id });
   const { agent, csrf } = await h.signIn(app, p);
 
   const home = await agent.get('/tracker');
-  assert.match(home.text, /Start the Daily Spoon Tracker/);
-  assert.match(home.text, /Start the Energy Balance Blueprint/);
+  assert.match(home.text, /Spoon Tracker/);
+  assert.doesNotMatch(home.text, /[Ss]ession \d|home practice|Screening/);
 
-  const page = await agent.get('/tracker/spoons/day/2');
-  assert.match(page.text, /0 of 12 spoons used/);
+  const page = await agent.get('/tracker/spoons');
+  assert.match(page.text, /Today&#39;s Spoons/);
+  assert.strictEqual((page.text.match(/class="spoon-btn"/g) || []).length, 12);
+  assert.doesNotMatch(page.text, />[^<]*(Submit|[Ww]eek|[Ss]ession \d)/);
 
-  for (let i = 0; i < 3; i++) {
-    const r = await agent.post('/tracker/spoons/day/2').set('X-CSRF-Token', csrf).send({ change: 'add' });
-    assert.strictEqual(r.body.used, i + 1);
-  }
-  await agent.post('/tracker/spoons/day/2').set('X-CSRF-Token', csrf).send({ change: 'remove' });
+  const today = spoons.dates(group)[spoons.todayIndex(group)].toISODate();
+  let r = await agent.post('/tracker/spoons').set('X-CSRF-Token', csrf).send({ spoon: 0, date: today });
+  assert.strictEqual(r.body.crossed, 1);
+  r = await agent.post('/tracker/spoons').set('X-CSRF-Token', csrf).send({ spoon: 4, date: today });
+  assert.strictEqual(r.body.crossed, 17);
+  r = await agent.post('/tracker/spoons').set('X-CSRF-Token', csrf).send({ spoon: 0, date: today });
+  assert.strictEqual(r.body.crossed, 16, 'tapping again puts the spoon back');
+  await agent.post('/tracker/spoons').set('X-CSRF-Token', csrf).send({ spoon: 12, date: today }).expect(400);
+
   // Without JavaScript the form posts and reloads.
-  await agent.post('/tracker/spoons/day/5').type('form').send({ _csrf: csrf, change: 'add' }).expect(302);
-
-  let data = await spoons.getSheet(p.id);
-  assert.strictEqual(data.days[1], 2);
-  assert.strictEqual(data.days[4], 1);
-  assert.strictEqual(data.days[0], null);
-
-  for (let i = 0; i < 15; i++) await agent.post('/tracker/spoons/day/7').set('X-CSRF-Token', csrf).send({ change: 'add' });
-  data = await spoons.getSheet(p.id);
-  assert.strictEqual(data.days[6], 12, 'never more than 12');
-
-  // The Energy Balance Blueprint no longer shows spoons left.
-  const eb = await agent.get('/tracker/energy/day/1');
-  assert.doesNotMatch(eb.text, /Today.s Spoons/i);
+  await agent.post('/tracker/spoons').type('form').send({ _csrf: csrf, spoon: 1, date: today }).expect(302);
+  const days = await spoons.getDays(p.id);
+  assert.strictEqual(spoons.countCrossed(days[spoons.todayIndex(group)]), 2);
 });
 
-test('spoon tracker: submit once, staff see it after', async () => {
+test('spoon tracker: staff see the days straight away; closed outside its week', async () => {
   const group = await h.makeGroup('P2', 2);
   const f = await h.makeUser('facilitator');
   await h.db.query('INSERT INTO group_facilitators (group_id, user_id) VALUES ($1, $2)', [group.id, f.id]);
   const p = await h.makeUser('participant', { groupId: group.id });
-  const { agent, csrf } = await h.signIn(app, p);
-
-  await agent.post('/tracker/spoons/submit').type('form').send({ _csrf: csrf }).expect(302).expect('Location', '/tracker/spoons/review');
-  await spoons.setUsed(p.id, 3, 9);
+  for (let i = 0; i < 9; i++) await spoons.toggle(p.id, 3, i);
 
   const fa = await h.signIn(app, f);
-  let staff = await fa.agent.get(`/staff/participants/${p.id}`);
-  assert.doesNotMatch(staff.text, /9 of 12<\/strong> spoons used/);
-
-  const done = await agent.post('/tracker/spoons/submit').type('form').send({ _csrf: csrf });
-  assert.match(done.text, /Daily Spoon Tracker is submitted/);
-  await agent.post('/tracker/spoons/day/4').set('X-CSRF-Token', csrf).send({ change: 'add' }).expect(400);
-
-  staff = await fa.agent.get(`/staff/participants/${p.id}`);
-  assert.match(staff.text, /9 of 12<\/strong> spoons used/);
+  const staff = await fa.agent.get(`/staff/participants/${p.id}`);
+  assert.match(staff.text, /9 of 12<\/strong> crossed off/);
   const grid = await fa.agent.get(`/staff/groups/${group.id}`);
-  assert.match(grid.text, /Daily Spoon Tracker:<\/strong> 1 of 1 submitted/);
-});
+  assert.match(grid.text, /1 day/);
 
-test('spoon tracker: closed outside the week after Session 2', async () => {
-  const group = await h.makeGroup('P3', 3);
-  const p = await h.makeUser('participant', { groupId: group.id });
-  const { agent, csrf } = await h.signIn(app, p);
-  await agent.post('/tracker/spoons/day/1').set('X-CSRF-Token', csrf).send({ change: 'add' }).expect(400);
-  await agent.get('/tracker/spoons/day/1').expect(302);
+  const later = await h.makeGroup('P3', 3);
+  const q = await h.makeUser('participant', { groupId: later.id });
+  const qa = await h.signIn(app, q);
+  await qa.agent.get('/tracker/spoons').expect(200).expect(/not open right now/);
+  await qa.agent.post('/tracker/spoons').set('X-CSRF-Token', qa.csrf).send({ spoon: 1 }).expect(400);
+  const home = await qa.agent.get('/tracker');
+  assert.doesNotMatch(home.text, /Cross off today/);
 });

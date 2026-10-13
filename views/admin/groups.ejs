@@ -4,7 +4,7 @@
 <% groups.forEach(function (g) { %>
   <div class="card">
     <h2><a href="/admin/groups/<%= g.id %>"><%= g.name %></a></h2>
-    <p>Session 1: <%= time.formatDay(time.sessionDay(g.session1_date, 1)) %></p>
+    <p>Starts <%= time.formatDay(time.sessionDay(g.session1_date, 1)) %></p>
   </div>
 <% }) %>
 <form class="card" method="post" action="/admin/groups">
@@ -16,7 +16,7 @@
     <input type="text" id="name" name="name" value="<%= form.name || '' %>" maxlength="100">
   </div>
   <div class="field">
-    <label for="session1_date">Date of Session 1</label>
+    <label for="session1_date">Start date (the first Thursday)</label>
     <p class="hint">Must be a Thursday. Week 1 opens that day.</p>
     <input type="date" id="session1_date" name="session1_date" value="<%= form.session1_date || '' %>">
   </div>

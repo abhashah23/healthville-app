@@ -9,7 +9,8 @@ const time = require('./time');
 
 const TIMES = content.tracker.timesOfDay.map((t) => t.key);
 const REFLECTIONS = content.tracker.reflections.map((r) => r.key);
-const LIMITS = { activity: 200, notes: 500, reflection: 1000 };
+const SEVERITIES = content.tracker.weekly.severityOptions.map((o) => o.key);
+const LIMITS = { activity: 200, notes: 500, reflection: 1000, pattern: 2000 };
 const SLOTS_PER_WEEK = 7 * TIMES.length;
 
 function clean(value, max) {
@@ -66,8 +67,12 @@ function missingItems(week) {
       if (parts.length) missing.push({ kind: 'slot', day: d, time: t, parts });
     }
   }
+  const r = week.row;
+  if (!r || r.tired_score === null) missing.push({ kind: 'weekly', key: 'tired' });
+  if (!r || r.severity === null) missing.push({ kind: 'weekly', key: 'severity' });
+  if (!r || r.pattern.trim() === '') missing.push({ kind: 'weekly', key: 'pattern' });
   for (const key of REFLECTIONS) {
-    if (!week.row || week.row[key].trim() === '') missing.push({ kind: 'reflection', key });
+    if (!r || r[key].trim() === '') missing.push({ kind: 'reflection', key });
   }
   return missing;
 }
@@ -95,63 +100,54 @@ async function saveSlot(participantId, n, day, timeOfDay, input) {
   return null;
 }
 
+// Saves the end-of-week questions: how tired, severity, fatigue pattern and
+// the three reflection questions. Anything not answered yet is left empty.
 async function saveReflections(participantId, n, input) {
+  let tired = null;
+  if (input.tired_score !== undefined && input.tired_score !== null && input.tired_score !== '') {
+    tired = Number(input.tired_score);
+    if (!Number.isInteger(tired) || tired < 1 || tired > 10) return 'Please choose a number from 1 to 10.';
+  }
+  let severity = null;
+  if (input.severity) {
+    if (!SEVERITIES.includes(input.severity)) return 'Please choose a severity level.';
+    severity = input.severity;
+  }
   const row = await getOrCreateWeekRow(participantId, n);
   if (row.submitted_at) return 'This week has already been submitted.';
   await db.query(
-    `UPDATE tracker_weeks SET reflection_most_fatigued = $2, reflection_biggest_impact = $3,
-       reflection_one_change = $4, updated_at = now() WHERE id = $1`,
-    [row.id, ...REFLECTIONS.map((k) => clean(input[k], LIMITS.reflection))]
+    `UPDATE tracker_weeks SET tired_score = $2, severity = $3, pattern = $4,
+       reflection_most_fatigued = $5, reflection_biggest_impact = $6,
+       reflection_one_change = $7, updated_at = now() WHERE id = $1`,
+    [row.id, tired, severity, clean(input.pattern, LIMITS.pattern), ...REFLECTIONS.map((k) => clean(input[k], LIMITS.reflection))]
   );
   return null;
 }
 
-// The Fatigue Screening session that is part of week n, if any.
-function screeningSession(n) {
-  const entry = Object.entries(content.screening.inWeek).find(([, week]) => week === n);
-  return entry ? Number(entry[0]) : null;
-}
-
-// Everything still needed before week n can be submitted, including the
-// Fatigue Screening when it is part of that week.
-async function missingForSubmit(participantId, n, week) {
-  const missing = missingItems(week);
-  const s = screeningSession(n);
-  if (s) {
-    const screening = require('./screening');
-    const row = await screening.get(participantId, s);
-    for (const key of screening.missing(row)) missing.unshift({ kind: 'screening', session: s, key });
-  }
-  return missing;
-}
-
 // Submits the week if everything is filled in. Returns missing items, or [].
-// When the week includes the Fatigue Screening, both are submitted together.
 async function submitWeek(participantId, n) {
   const week = await getWeek(participantId, n);
   if (week.row && week.row.submitted_at) return [];
-  const missing = await missingForSubmit(participantId, n, week);
+  const missing = missingItems(week);
   if (missing.length) return missing;
-  const s = screeningSession(n);
-  await db.transaction(async (c) => {
-    await c.query('UPDATE tracker_weeks SET submitted_at = now() WHERE id = $1 AND submitted_at IS NULL', [week.row.id]);
-    if (s) {
-      await c.query(
-        'UPDATE fatigue_screenings SET submitted_at = now() WHERE participant_id = $1 AND session_number = $2 AND submitted_at IS NULL',
-        [participantId, s]
-      );
-    }
-  });
+  await db.query('UPDATE tracker_weeks SET submitted_at = now() WHERE id = $1 AND submitted_at IS NULL', [week.row.id]);
   return [];
 }
 
 // Status of week N for one participant, as shown to staff and participants.
 // 'upcoming', 'not_started', 'in_progress', 'submitted' or 'not_submitted'.
+function severityLabel(key) {
+  const o = content.tracker.weekly.severityOptions.find((x) => x.key === key);
+  return o ? o.label : '';
+}
+
 function weekStatus(state, row, startedCount) {
   if (row && row.submitted_at) return 'submitted';
   if (state === 'upcoming') return 'upcoming';
   if (state === 'closed') return 'not_submitted';
-  return startedCount > 0 || (row && REFLECTIONS.some((k) => row[k] !== '')) ? 'in_progress' : 'not_started';
+  // Only weekly tracker rows have these fields; other trackers pass their own rows.
+  const answered = Boolean(row) && (row.tired_score != null || row.severity != null || Boolean(row.pattern) || REFLECTIONS.some((k) => Boolean(row[k])));
+  return startedCount > 0 || answered ? 'in_progress' : 'not_started';
 }
 
 const STATUS_LABELS = {
@@ -251,9 +247,8 @@ module.exports = {
   saveSlot,
   saveReflections,
   submitWeek,
-  missingForSubmit,
-  screeningSession,
   weekStatus,
+  severityLabel,
   groupGrid,
   groupSummary,
   participantAverages,

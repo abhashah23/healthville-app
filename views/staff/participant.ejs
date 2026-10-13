@@ -3,27 +3,6 @@
 <h1><%= participant.name %></h1>
 <p>Participant code <strong><%= participant.participant_code %></strong>. <%= group.name %>.<% if (!participant.active) { %> <span class="chip not_started">Account turned off</span><% } %></p>
 
-<section class="card" aria-labelledby="sc-title">
-  <h2 id="sc-title"><%= content.tracker.name %>: <%= content.screening.name %></h2>
-  <p class="hint">Before Session 1, and before Session 6 as part of week 5.</p>
-  <div class="sc-compare">
-  <% screenings.forEach(function (sc) { var r = sc.row; var show = r && (sc.status === 'submitted' || sc.status === 'not_submitted'); %>
-    <div class="sc-col">
-      <h3>Before Session <%= sc.s %> <%- include('../partials/status', { status: sc.status }) %></h3>
-      <% if (!show) { %>
-        <p class="empty"><%= sc.status === 'in_progress' ? 'Appears once submitted, or once Session ' + sc.s + ' starts.' : 'Nothing yet.' %></p>
-      <% } else { %>
-        <% if (sc.status === 'not_submitted') { %><p class="hint">Not submitted. This is what was entered.</p><% } %>
-        <p><strong><%= content.screening.tiredQuestion %></strong><br><%= r.tired_score !== null ? r.tired_score + ' out of 10' : 'Not answered' %></p>
-        <p><strong><%= content.screening.severityQuestion %></strong><br><%= r.severity ? content.screening.severityOptions.filter(function (o) { return o.key === r.severity; })[0].label : 'Not answered' %></p>
-        <p><strong><%= content.screening.patternQuestion %></strong></p>
-        <p class="pre"><%= r.pattern || 'Not answered' %></p>
-      <% } %>
-    </div>
-  <% }) %>
-  </div>
-</section>
-
 <section class="card" aria-labelledby="weeks-title">
   <h2 id="weeks-title">Weeks at a glance</h2>
   <ul class="week-list">
@@ -31,7 +10,7 @@
     <li><span><% if (w.hasData && w.status !== 'in_progress') { %><a href="#week-<%= w.n %>">Week <%= w.n %></a><% } else { %>Week <%= w.n %><% } %></span><%- include('../partials/status', { status: w.status }) %></li>
   <% }) %>
   </ul>
-  <p class="hint">Entries for the current week appear once it is submitted, or once it closes at the start of the next session.</p>
+  <p class="hint">Entries for the current week appear once it is submitted, or once it closes.</p>
 </section>
 
 <% if (chart) { %>
@@ -43,21 +22,10 @@
 <% } %>
 
 <details class="card week" id="spoons">
-  <summary><%= content.spoons.name %>&nbsp;<%- include('../partials/status', { status: sp.status }) %></summary>
-  <% if (sp.status === 'submitted' || sp.status === 'not_submitted') { %>
-    <% if (sp.status === 'submitted') { %><p class="hint">Submitted <%= time.formatTimestamp(sp.sheet.submitted_at) %>.</p><% } else { %><p class="hint">Not submitted. This is what was entered before it closed.</p><% } %>
-    <% if (!sp.daysUsed) { %><p class="empty">Nothing entered.</p><% } else { %>
-    <ul class="week-list">
-      <% sp.dates.forEach(function (d, i) { var u = sp.days[i]; if (u === null) return; %>
-        <li><span><%= time.formatDay(d) %></span><span><strong><%= u %> of <%= content.spoons.perDay %></strong> spoons used</span></li>
-      <% }) %>
-    </ul>
-    <% } %>
-  <% } else if (sp.status === 'in_progress') { %>
-    <p class="hint">Entries appear once it is submitted, or once it closes at the start of Session <%= content.spoons.week + 1 %>.</p>
-  <% } else { %>
-    <p class="empty">Nothing yet.</p>
-  <% } %>
+  <summary><%= content.spoons.name %></summary>
+  <% var spAny = false; sp.dates.forEach(function (d, i) { if (sp.days[i] === null) return; if (!spAny) { %><ul class="week-list"><% } spAny = true; var c = 0; for (var k = 0; k < content.spoons.perDay; k++) if (sp.days[i] & (1 << k)) c++; %>
+    <li><span><%= time.formatDay(d) %></span><span><strong><%= c %> of <%= content.spoons.perDay %></strong> crossed off</span></li>
+  <% }); if (spAny) { %></ul><% } else { %><p class="empty"><%= sp.state === 'upcoming' ? 'Not open yet.' : 'Nothing yet.' %></p><% } %>
 </details>
 
 <details class="card week" id="energy">
@@ -71,7 +39,7 @@
       </div>
     <% }); if (!anyDay) { %><p class="empty">Nothing entered.</p><% } %>
   <% } else if (eb.status === 'in_progress') { %>
-    <p class="hint">Entries appear once it is submitted, or once it closes at the start of Session <%= content.energyBalance.week + 1 %>.</p>
+    <p class="hint">Entries appear once it is submitted, or once it closes.</p>
   <% } else { %>
     <p class="empty">Nothing yet.</p>
   <% } %>
@@ -101,6 +69,10 @@
     </div>
   <% }) %>
   <h3>Weekly reflection</h3>
+  <% var W = content.tracker.weekly; var wr = w.week.row || {}; %>
+  <p><strong><%= W.tiredQuestion %></strong><br><%= wr.tired_score != null ? wr.tired_score + ' out of 10' : 'Not answered' %></p>
+  <p><strong><%= W.severityQuestion %></strong><br><%= wr.severity ? W.severityOptions.filter(function (o) { return o.key === wr.severity; })[0].label : 'Not answered' %></p>
+  <p><strong><%= W.patternQuestion %></strong><br><span class="pre"><%= wr.pattern || 'Not answered' %></span></p>
   <% content.tracker.reflections.forEach(function (r) { var v = w.week.row ? w.week.row[r.key] : ''; %>
     <p><strong><%= r.label %></strong><br><% if (v) { %><%= v %><% } else { %><span class="empty">Not answered</span><% } %></p>
   <% }) %>

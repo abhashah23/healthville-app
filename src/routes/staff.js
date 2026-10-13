@@ -12,7 +12,6 @@ const time = require('../time');
 const tracker = require('../tracker');
 const { lineChart } = require('../chart');
 const energy = require('../energy');
-const screening = require('../screening');
 const spoons = require('../spoons');
 
 const router = express.Router();
@@ -46,13 +45,12 @@ router.get('/groups/:id', async (req, res, next) => {
     const group = await db.one('SELECT * FROM groups WHERE id = $1', [id]);
     if (!group || !(await access.canSeeGroup(req.user, id))) return notFound(res);
     const ebStatusFor = await energy.groupStatuses(group);
-    const scStatusFor = await screening.groupStatuses(group);
-    const spStatusFor = await spoons.groupStatuses(group);
+    const spDaysFor = await spoons.groupDayCounts(group);
+    const spState = spoons.state(group);
     const grid = (await tracker.groupGrid(group)).map((p) => ({
       ...p,
       eb: ebStatusFor(p.id),
-      sp: spStatusFor(p.id),
-      sc1: scStatusFor(p.id, 1),
+      spDays: spState === 'upcoming' ? null : spDaysFor(p.id),
     }));
     const summary = await tracker.groupSummary(group);
     const ebSubmitted = grid.filter((p) => p.eb === 'submitted').length;
@@ -63,8 +61,7 @@ router.get('/groups/:id', async (req, res, next) => {
       grid,
       summary,
       ebSubmitted,
-      sc1Submitted: grid.filter((p) => p.sc1 === 'submitted').length,
-      spSubmitted: grid.filter((p) => p.sp === 'submitted').length,
+      spUsers: grid.filter((p) => p.spDays).length,
       chart: summary.some((s) => s.average !== null)
         ? lineChart(summary.map((s) => ({ week: s.week, overall: s.average })), { title: 'Group average fatigue score by week (submitted weeks only)', series: ['overall'] })
         : null,
@@ -97,7 +94,7 @@ router.get('/participants/:id', async (req, res, next) => {
         status: tracker.weekStatus(state, week.row, started),
         week,
         days: time.weekDays(group.session1_date, n),
-        hasData: started > 0 || Boolean(week.row && tracker.REFLECTIONS.some((k) => week.row[k] !== '')),
+        hasData: started > 0 || tracker.weekStatus('open', week.row, 0) === 'in_progress',
       });
     }
     const ebData = await energy.getSheet(participant.id);
@@ -107,13 +104,7 @@ router.get('/participants/:id', async (req, res, next) => {
       days: ebData.days,
       dates: time.weekDays(group.session1_date, require('../content').energyBalance.week),
     };
-    const screenings = [];
-    for (const s of screening.SESSIONS) {
-      const row = await screening.get(participant.id, s);
-      screenings.push({ s, row, status: screening.status(group, s, row) });
-    }
-    const spData = await spoons.getSheet(participant.id);
-    const sp = { ...spData, status: spoons.status(group, spData), dates: time.weekDays(group.session1_date, require('../content').spoons.week) };
+    const sp = { state: spoons.state(group), days: await spoons.getDays(participant.id), dates: spoons.dates(group) };
     const averages = await tracker.participantAverages(participant.id);
     await audit.record(req.user, 'view_participant', { subject: participant, groupId: group.id });
     res.render('staff/participant', {
@@ -122,7 +113,6 @@ router.get('/participants/:id', async (req, res, next) => {
       group,
       weeks,
       eb,
-      screenings,
       sp,
       averages,
       chart: averages.some((a) => a.overall !== null)

@@ -17,7 +17,7 @@ test.after(async () => {
 });
 
 test('energy balance: add lines, daily total is used minus given back', async () => {
-  const group = await h.makeGroup('E1', 2); // week 2 (after Session 2) is open
+  const group = await h.makeGroup('E1', 3); // opens on the day of Session 3
   const p = await h.makeUser('participant', { groupId: group.id });
   const { agent, csrf } = await h.signIn(app, p);
 
@@ -45,7 +45,7 @@ test('energy balance: add lines, daily total is used minus given back', async ()
 });
 
 test('energy balance: change and remove a line, but not someone else\'s', async () => {
-  const group = await h.makeGroup('E2', 2);
+  const group = await h.makeGroup('E2', 3);
   const p = await h.makeUser('participant', { groupId: group.id });
   const other = await h.makeUser('participant', { groupId: group.id });
   await energy.addLine(other.id, 0, 'activity', { activity: 'Theirs', points: 1 });
@@ -67,7 +67,7 @@ test('energy balance: change and remove a line, but not someone else\'s', async 
 });
 
 test('energy balance: submit needs one activity, then nothing can change', async () => {
-  const group = await h.makeGroup('E3', 2);
+  const group = await h.makeGroup('E3', 3);
   const p = await h.makeUser('participant', { groupId: group.id });
   const { agent, csrf } = await h.signIn(app, p);
 
@@ -85,9 +85,9 @@ test('energy balance: submit needs one activity, then nothing can change', async
   await agent.get('/tracker/energy/day/2').expect(302);
 });
 
-test('energy balance: not open before Session 2, closed after Session 3 starts', async () => {
-  const before = await h.makeGroup('E4', 1);
-  const after = await h.makeGroup('E5', 3);
+test('energy balance: not open before Session 3, closed once Session 4 starts', async () => {
+  const before = await h.makeGroup('E4', 2);
+  const after = await h.makeGroup('E5', 4);
   const p1 = await h.makeUser('participant', { groupId: before.id });
   const p2 = await h.makeUser('participant', { groupId: after.id });
   const a1 = await h.signIn(app, p1);
@@ -100,7 +100,7 @@ test('energy balance: not open before Session 2, closed after Session 3 starts',
 });
 
 test('energy balance: staff see it once submitted, not while in progress', async () => {
-  const group = await h.makeGroup('E6', 2);
+  const group = await h.makeGroup('E6', 3);
   const f = await h.makeUser('facilitator');
   await h.db.query('INSERT INTO group_facilitators (group_id, user_id) VALUES ($1, $2)', [group.id, f.id]);
   const p = await h.makeUser('participant', { groupId: group.id });
@@ -120,7 +120,7 @@ test('energy balance: staff see it once submitted, not while in progress', async
 });
 
 test('energy balance: deleting a participant removes their worksheet', async () => {
-  const group = await h.makeGroup('E7', 2);
+  const group = await h.makeGroup('E7', 3);
   const p = await h.makeUser('participant', { groupId: group.id });
   await energy.addLine(p.id, 0, 'activity', { activity: 'x', points: 1 });
   await h.db.query('DELETE FROM users WHERE id = $1', [p.id]);
