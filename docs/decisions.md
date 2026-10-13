@@ -45,6 +45,13 @@ Newest updates at the top of each section.
 - Same rules as the weekly tracker: submit once, no changes after, closes at
   the start of Session 3, staff see it once submitted or closed.
 
+## From the handouts (Weekly Fatigue Tracker, My Spoons)
+
+- Energy Balance points are spoons an activity costs. The app shows the
+  examples from the "My Spoons" handout: watching a movie 1, bathing 2,
+  cooking food 3, going to work or school 4.
+- The weekly tracker label now matches the handout: "What I was doing".
+
 ## Choices made while building (Abha can change these)
 
 - Facilitators do not see a week while it is still in progress. They see it
@@ -62,8 +69,6 @@ Newest updates at the top of each section.
 
 ## Open questions
 
-- Energy Balance: what do 1 and 4 mean on the points scale (for example
-  "1 = light, 4 = very draining")? For now the app says "Score 1 to 4".
 - Energy Balance: the paper sheet says replenishing can "add a spoon". The
   app treats replenishing points as taken off the day's total. Is that right?
 

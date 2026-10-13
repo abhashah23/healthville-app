@@ -12,7 +12,7 @@
   </div>
   <fieldset aria-describedby="points-hint">
     <legend><%= k.pointsLabel %></legend>
-    <p class="hint" id="points-hint"><%= k.pointsHint %><% if (EB.pointsScaleNote) { %> <%= EB.pointsScaleNote %><% } %></p>
+    <p class="hint" id="points-hint"><%= k.pointsHint %></p>
     <div class="scores four">
       <% for (var s = 1; s <= 4; s++) { %>
         <input type="radio" id="points-<%= s %>" name="points" value="<%= s %>" <%= Number(line.points) === s ? 'checked' : '' %>>

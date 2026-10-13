@@ -33,7 +33,8 @@ module.exports = {
     // PLACEHOLDER pending Abha: words for each end of the 0 to 10 scale.
     scoreLowLabel: '0',
     scoreHighLabel: '10',
-    activityLabel: 'What were you doing?',
+    // Column heading on the handout: "What I Was Doing".
+    activityLabel: 'What I was doing',
     notesLabel: 'Notes or patterns (optional)',
     reflections: [
       { key: 'reflection_most_fatigued', label: 'When did I feel most fatigued this week?' },
@@ -55,7 +56,8 @@ module.exports = {
         addLabel: 'Add an activity',
         activityLabel: 'Activity',
         pointsLabel: 'Points (spoons) used',
-        pointsHint: 'Score 1 to 4.',
+        // Examples from the "My Spoons" handout (Module 2 Toolkit).
+        pointsHint: 'How many spoons it cost, from 1 to 4. For example: watching a movie 1, bathing 2, cooking food 3, going to work or school 4.',
       },
       replenish: {
         heading: 'Replenishing activities',
@@ -63,12 +65,10 @@ module.exports = {
         addLabel: 'Add a replenishing activity',
         activityLabel: 'Replenishing activity',
         pointsLabel: 'Points (spoons) given back',
-        pointsHint: 'Score 1 to 4. Taken off your total.',
+        pointsHint: 'How many spoons it gave back, from 1 to 4. Taken off your total.',
       },
     },
     commentLabel: 'Comments (optional)',
-    // PLACEHOLDER pending Abha: what 1 and 4 mean on the points scale.
-    pointsScaleNote: '',
     totalLabel: 'Daily total',
     totalHint: 'Points used, minus points given back.',
     maxLines: { activity: 40, replenish: 20 },
