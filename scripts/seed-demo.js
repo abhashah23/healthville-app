@@ -73,6 +73,17 @@ async function main() {
       }
     }
   }
+  // Fatigue Screening before Session 1 for everyone but the last person.
+  const all = await db.many(`SELECT id FROM users WHERE group_id = $1 AND role = 'participant' ORDER BY id`, [group.id]);
+  const severities = ['moderate', 'severe', 'mild', 'moderate'];
+  for (const [i, person] of all.slice(0, 4).entries()) {
+    await db.query(
+      `INSERT INTO fatigue_screenings (participant_id, session_number, tired_score, severity, pattern, submitted_at)
+       VALUES ($1, 1, $2, $3, $4, now())`,
+      [person.id, 5 + (i % 3), severities[i], 'Worst in the late afternoon. Better after a short rest. Busy days make it worse. It stops me gardening, seeing friends and cooking.']
+    );
+  }
+
   // Energy Balance Blueprint (week after Session 2) for the first three people.
   const people = await db.many(`SELECT id FROM users WHERE group_id = $1 AND role = 'participant' ORDER BY id LIMIT 3`, [group.id]);
   for (const [i, person] of people.entries()) {

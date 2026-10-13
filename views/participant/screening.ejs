@@ -1,0 +1,63 @@
+<%- include('../partials/head', { narrow: true }) %>
+<% var S = content.screening; var r = row || { tired_score: null, severity: null, pattern: '' }; %>
+<p><a href="/tracker">Back to my tracker</a></p>
+<h1><%= S.name %></h1>
+<p class="hint">Before Session <%= s %>.</p>
+
+<% if (scState === 'upcoming') { %>
+  <div class="card"><p>This opens on <%= time.formatDay(opens) %>.</p></div>
+<% } else if (!editable) { %>
+  <% if (submittedAt) { %><p><span class="chip submitted">Submitted</span> on <%= time.formatTimestamp(submittedAt) %>. It cannot be changed now.</p>
+  <% } else { %><p><span class="chip not_submitted">Closed</span> This closed before it was submitted. You can still see what you entered.</p><% } %>
+  <div class="card">
+    <p><strong><%= S.tiredQuestion %></strong><br><%= r.tired_score !== null ? r.tired_score + ' out of 10' : 'Not answered' %></p>
+    <p><strong><%= S.severityQuestion %></strong><br><%= r.severity ? S.severityOptions.filter(function (o) { return o.key === r.severity; })[0].label : 'Not answered' %></p>
+    <p><strong><%= S.patternQuestion %></strong></p>
+    <p class="pre"><%= r.pattern || 'Not answered' %></p>
+  </div>
+<% } else { %>
+  <p>All three are needed before you submit. Your answers save as you go.</p>
+  <p class="hint">This closes when Session <%= s %> starts: <%- include('../partials/deadline', { at: closes }) %>.</p>
+  <% if (error) { %><div class="error-box" role="alert"><%= error %>
+    <% if (missing.length) { %><ul><% missing.forEach(function (m) { %><li><a href="#q-<%= m %>"><%= m === 'tired' ? S.tiredQuestion : m === 'severity' ? S.severityQuestion : S.patternQuestion %></a></li><% }) %></ul><% } %>
+  </div><% } %>
+  <form class="card" method="post" action="/tracker/screening/<%= s %>" data-autosave data-draft-key="hv-screen<%= s %>-u<%= user.id %>">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <fieldset id="q-tired" aria-describedby="tired-hint">
+      <legend><%= S.tiredQuestion %></legend>
+      <p class="hint" id="tired-hint"><%= S.tiredLow %>. <%= S.tiredHigh %>.</p>
+      <div class="scores ten">
+        <% for (var n = 1; n <= 10; n++) { %>
+          <input type="radio" id="tired-<%= n %>" name="tired_score" value="<%= n %>" <%= Number(r.tired_score) === n ? 'checked' : '' %>>
+          <label for="tired-<%= n %>"><%= n %></label>
+        <% } %>
+      </div>
+    </fieldset>
+
+    <fieldset id="q-severity">
+      <legend><%= S.severityQuestion %></legend>
+      <div class="choices">
+        <% S.severityOptions.forEach(function (o) { %>
+          <input type="radio" id="sev-<%= o.key %>" name="severity" value="<%= o.key %>" <%= r.severity === o.key ? 'checked' : '' %>>
+          <label for="sev-<%= o.key %>"><%= o.label %></label>
+        <% }) %>
+      </div>
+    </fieldset>
+
+    <div class="field" id="q-pattern">
+      <label for="pattern"><%= S.patternQuestion %></label>
+      <ul class="prompts" id="pattern-prompts">
+        <% S.patternPrompts.forEach(function (p) { %><li><%= p %></li><% }) %>
+      </ul>
+      <textarea id="pattern" name="pattern" class="tall" maxlength="<%= limits.pattern %>" aria-describedby="pattern-prompts"><%= r.pattern %></textarea>
+    </div>
+
+    <p class="save-status" role="status" aria-live="polite" data-save-status></p>
+    <div class="actions">
+      <button type="submit" class="wide" name="go" value="submit">Submit</button>
+      <button type="submit" class="secondary wide" name="go" value="save">Save and finish later</button>
+    </div>
+  </form>
+<% } %>
+<%- include('../partials/foot', { scripts: editable ? ['/js/autosave.js', '/js/localtime.js'] : ['/js/localtime.js'] }) %>

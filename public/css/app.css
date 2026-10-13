@@ -249,3 +249,21 @@ details summary { cursor: pointer; font-weight: 600; min-height: 44px; display: 
 .spoon.used ellipse, .spoon.used path { fill: #fff; stroke: #8a8580; stroke-width: 1.5; }
 .spoon .cross { stroke: #5a5a5a; stroke-width: 2; }
 .spoons-text { margin: 0 0 .5rem; }
+
+/* ---------- Fatigue Screening ---------- */
+.scores.ten { grid-template-columns: repeat(5, 1fr); }
+@media (min-width: 34rem) { .scores.ten { grid-template-columns: repeat(10, 1fr); } }
+.choices { display: grid; gap: .5rem; }
+.choices input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choices label {
+  margin: 0; display: flex; align-items: center; min-height: 56px; padding: .5rem 1rem;
+  border: 2px solid #8a8580; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer;
+}
+.choices input:checked + label { background: var(--teal); border-color: var(--teal); color: #fff; }
+.choices input:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 3px; }
+.prompts { margin: 0 0 .5rem; padding-left: 1.2rem; color: var(--ink); }
+.pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.sc-compare { display: grid; gap: 1rem; }
+@media (min-width: 46rem) { .sc-compare { grid-template-columns: 1fr 1fr; } }
+.sc-col { min-width: 0; }
+.sc-col h3 { margin-top: 0; }

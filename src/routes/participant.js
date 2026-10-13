@@ -9,6 +9,7 @@ const tracker = require('../tracker');
 const { lineChart } = require('../chart');
 const content = require('../content');
 const energy = require('../energy');
+const screening = require('../screening');
 
 const router = express.Router();
 router.use(auth.requireRole('participant'));
@@ -25,6 +26,7 @@ router.use(async (req, res, next) => {
 });
 
 router.use('/energy', require('./energy'));
+router.use('/screening', require('./screening'));
 
 router.param('n', (req, res, next, value) => {
   const n = Number(value);
@@ -97,6 +99,11 @@ router.get('/', async (req, res, next) => {
       opens: time.weekOpens(req.group.session1_date, content.energyBalance.week),
       closes: time.weekCloses(req.group.session1_date, content.energyBalance.week),
     };
+    const screenings = [];
+    for (const s of screening.SESSIONS) {
+      const row = await screening.get(req.user.id, s);
+      screenings.push({ s, state: screening.state(req.group, s), status: screening.status(req.group, s, row), closes: screening.closes(req.group, s) });
+    }
     const averages = await tracker.participantAverages(req.user.id);
     const hasChart = averages.some((a) => a.overall !== null);
     res.render('participant/home', {
@@ -108,6 +115,7 @@ router.get('/', async (req, res, next) => {
       chart: hasChart ? lineChart(averages, { title: 'My average fatigue score by week' }) : null,
       nextOpens: weeks.find((w) => w.state === 'upcoming') || null,
       eb,
+      screenings,
     });
   } catch (err) {
     next(err);

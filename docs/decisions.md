@@ -59,6 +59,15 @@ Newest updates at the top of each section.
   replenishing gives them back, never more than 12 shown. If more are used
   than 12, the app says how many more, without judgement.
 
+## Decided (Fatigue Screening, from Abha)
+
+- Done before Session 1 and before Session 6 only. Linked to the participant
+  so the facilitator can use it. This is separate from the Program Evaluation
+  Survey, which stays code-only and is still Phase 3.
+- Follows the LMS screenshot: 1 to 10 scale, five severity levels (Severe,
+  Moderate, Mild, Very mild, None), one box for the fatigue pattern.
+- All three answers are required to submit.
+
 ## Choices made while building (Abha can change these)
 
 - Facilitators do not see a week while it is still in progress. They see it
@@ -75,6 +84,12 @@ Newest updates at the top of each section.
   on any day.
 
 ## Open questions
+
+- Fatigue Screening: it opens one week before each session. Is that early
+  enough, especially for people who join just before Session 1?
+- Fatigue Screening: the screenshot's last prompt reads "Three things
+  fatigue prevents me doing from". The app uses the handout wording,
+  "Three things fatigue prevents me from doing". OK?
 
 
 - Week 6 has no next session. For now it closes one week after Session 6, at

@@ -4,7 +4,7 @@ A simple app where participants in Healthville's six-session group coaching
 program, "Managing and Coping with Cancer-Related Fatigue", fill in their
 weekly tracker, and where Healthville staff can see what has been filled in.
 
-**Status: Phase 1 and the Energy Balance Blueprint built and working with made-up data. Not yet approved for
+**Status: Phase 1, the Energy Balance Blueprint and the Fatigue Screening built and working with made-up data. Not yet approved for
 real participants.** See "Needs approval" below.
 
 ## What it does (Phase 1)
@@ -27,6 +27,15 @@ real participants.** See "Needs approval" below.
   "Today's spoons": 12 spoons a day, as on the My Spoons handout.
 - Same rules as the weekly tracker: submit once, no changes after, closes when
   Session 3 starts, and staff see it once it is submitted or closed.
+
+**Fatigue Screening** (before Session 1 and before Session 6, as in the LMS
+screenshot):
+- How tired have you felt over the last week? (1 to 10, "1: No fatigue",
+  "10: Worst possible fatigue")
+- Your severity level (Severe, Moderate, Mild, Very mild, None)
+- Your Fatigue Pattern: one box, with the four prompts above it.
+- Opens the week before the session and closes when the session starts.
+  Submit once. Staff see both screenings side by side.
 
 **Facilitators** see only the groups they are assigned to:
 - A grid of who has submitted which week.
@@ -135,6 +144,12 @@ To deploy, see [docs/DEPLOY.md](docs/DEPLOY.md).
 4. Change one line and remove another.
 5. Try to submit with nothing added. Then add an activity and submit.
 6. Check that nothing can be changed after submitting.
+
+**Fatigue Screening (as a participant, in the week before Session 1)**
+1. On the home page, tap "Start" on the Fatigue Screening card.
+2. Choose a number and a severity level. Watch for "Saved".
+3. Tap Submit with the pattern box empty. Does it tell you what is missing?
+4. Fill it in and submit. Check it cannot be changed.
 
 **As a facilitator**
 1. Sign in as `facilitator@demo.healthville.test`.

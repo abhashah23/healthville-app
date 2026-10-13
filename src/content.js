@@ -77,6 +77,32 @@ module.exports = {
     maxLines: { activity: 40, replenish: 20 },
   },
 
+  // Fatigue Screening, before Session 1 and before Session 6.
+  // Questions and options follow the LMS screenshot exactly.
+  screening: {
+    name: 'Fatigue Screening',
+    sessions: [1, 6],
+    tiredQuestion: 'How tired have you felt over the last week?',
+    tiredLow: '1: No fatigue',
+    tiredHigh: '10: Worst possible fatigue',
+    severityQuestion: 'Your severity level',
+    severityOptions: [
+      { key: 'severe', label: 'Severe' },
+      { key: 'moderate', label: 'Moderate' },
+      { key: 'mild', label: 'Mild' },
+      { key: 'very_mild', label: 'Very mild' },
+      { key: 'none', label: 'None' },
+    ],
+    patternQuestion: 'Your Fatigue Pattern',
+    patternPrompts: [
+      'My fatigue tends to be worst at:',
+      'My fatigue is better when:',
+      'Things that make it worse:',
+      // The screenshot reads "prevents me doing from"; wording from the handout.
+      'Three things fatigue prevents me from doing:',
+    ],
+  },
+
   // Score bands from the handout.
   bands: [
     { key: 'mild', label: 'Mild', min: 0, max: 3 },

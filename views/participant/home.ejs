@@ -2,6 +2,14 @@
 <% var firstName = user.name.split(' ')[0]; var pLabel = function (s) { return s === 'not_submitted' ? 'Closed' : statusLabels[s]; }; %>
 <h1>Hello, <%= firstName %></h1>
 
+<% screenings.forEach(function (sc) { if (sc.state !== 'open' || sc.status === 'submitted') return; %>
+<section class="card" aria-labelledby="sc-<%= sc.s %>">
+  <h2 id="sc-<%= sc.s %>"><%= content.screening.name %> before Session <%= sc.s %></h2>
+  <p>Three short questions. Please fill it in before Session <%= sc.s %> starts: <%- include('../partials/deadline', { at: sc.closes }) %>.</p>
+  <a class="button wide" href="/tracker/screening/<%= sc.s %>"><%= sc.status === 'in_progress' ? 'Continue' : 'Start' %></a>
+</section>
+<% }) %>
+
 <% if (current) { %>
 <section class="card" aria-labelledby="this-week">
   <h2 id="this-week">Week <%= current.n %></h2>
@@ -55,6 +63,12 @@
         <a href="/tracker/week/<%= w.n %>">Week <%= w.n %></a>
       <% } %>
       <span class="chip <%= w.status %>"><%= pLabel(w.status) %></span>
+    </li>
+    <% }) %>
+    <% screenings.forEach(function (sc) { %>
+    <li>
+      <% if (sc.state === 'upcoming') { %><span><%= content.screening.name %>, Session <%= sc.s %></span><% } else { %><a href="/tracker/screening/<%= sc.s %>"><%= content.screening.name %>, Session <%= sc.s %></a><% } %>
+      <span class="chip <%= sc.status %>"><%= pLabel(sc.status) %></span>
     </li>
     <% }) %>
     <li>

@@ -3,6 +3,26 @@
 <h1><%= participant.name %></h1>
 <p>Participant code <strong><%= participant.participant_code %></strong>. <%= group.name %>.<% if (!participant.active) { %> <span class="chip not_started">Account turned off</span><% } %></p>
 
+<section class="card" aria-labelledby="sc-title">
+  <h2 id="sc-title"><%= content.screening.name %></h2>
+  <div class="sc-compare">
+  <% screenings.forEach(function (sc) { var r = sc.row; var show = r && (sc.status === 'submitted' || sc.status === 'not_submitted'); %>
+    <div class="sc-col">
+      <h3>Before Session <%= sc.s %> <%- include('../partials/status', { status: sc.status }) %></h3>
+      <% if (!show) { %>
+        <p class="empty"><%= sc.status === 'in_progress' ? 'Appears once submitted, or once Session ' + sc.s + ' starts.' : 'Nothing yet.' %></p>
+      <% } else { %>
+        <% if (sc.status === 'not_submitted') { %><p class="hint">Not submitted. This is what was entered.</p><% } %>
+        <p><strong><%= content.screening.tiredQuestion %></strong><br><%= r.tired_score !== null ? r.tired_score + ' out of 10' : 'Not answered' %></p>
+        <p><strong><%= content.screening.severityQuestion %></strong><br><%= r.severity ? content.screening.severityOptions.filter(function (o) { return o.key === r.severity; })[0].label : 'Not answered' %></p>
+        <p><strong><%= content.screening.patternQuestion %></strong></p>
+        <p class="pre"><%= r.pattern || 'Not answered' %></p>
+      <% } %>
+    </div>
+  <% }) %>
+  </div>
+</section>
+
 <section class="card" aria-labelledby="weeks-title">
   <h2 id="weeks-title">Weeks at a glance</h2>
   <ul class="week-list">
@@ -21,8 +41,8 @@
 </section>
 <% } %>
 
-<section class="card" aria-labelledby="eb-title">
-  <h2 id="eb-title"><%= content.energyBalance.name %> <%- include('../partials/status', { status: eb.status }) %></h2>
+<details class="card week" id="energy">
+  <summary><%= content.energyBalance.name %>&nbsp;<%- include('../partials/status', { status: eb.status }) %></summary>
   <% if (eb.status === 'submitted' || eb.status === 'not_submitted') { %>
     <% if (eb.status === 'submitted') { %><p class="hint">Submitted <%= time.formatTimestamp(eb.sheet.submitted_at) %>.</p><% } else { %><p class="hint">Not submitted. This is what was entered before it closed.</p><% } %>
     <% var anyDay = false; eb.dates.forEach(function (d, i) { var dd = eb.days[i]; if (!dd.count) return; anyDay = true; %>
@@ -33,8 +53,10 @@
     <% }); if (!anyDay) { %><p class="empty">Nothing entered.</p><% } %>
   <% } else if (eb.status === 'in_progress') { %>
     <p class="hint">Entries appear once it is submitted, or once it closes at the start of Session <%= content.energyBalance.week + 1 %>.</p>
+  <% } else { %>
+    <p class="empty">Nothing yet.</p>
   <% } %>
-</section>
+</details>
 
 <% var shown = weeks.filter(function (w) { return w.hasData && w.status !== 'in_progress'; }); %>
 <% if (shown.length) { %><h2>Weekly entries</h2><% } %>

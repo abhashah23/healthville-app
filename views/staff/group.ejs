@@ -9,13 +9,15 @@
   <div class="table-wrap" tabindex="0" role="region" aria-label="Status table, scrolls sideways on small screens">
   <table class="grid">
     <caption class="visually-hidden">Weekly tracker status for each participant, weeks 1 to 6</caption>
-    <thead><tr><th scope="col">Participant</th><% weekNumbers.forEach(function (n) { %><th scope="col">Week <%= n %></th><% }) %><th scope="col"><%= content.energyBalance.name %></th></tr></thead>
+    <thead><tr><th scope="col">Participant</th><th scope="col">Screening S1</th><% weekNumbers.forEach(function (n) { %><th scope="col">Week <%= n %></th><% }) %><th scope="col"><%= content.energyBalance.name %></th><th scope="col">Screening S6</th></tr></thead>
     <tbody>
     <% grid.forEach(function (p) { %>
       <tr>
         <th scope="row"><a href="/staff/participants/<%= p.id %>"><%= p.name %></a><br><span class="hint"><%= p.participant_code %></span></th>
+        <td><%- include('../partials/status', { status: p.sc[0] }) %></td>
         <% p.weeks.forEach(function (s) { %><td><%- include('../partials/status', { status: s }) %></td><% }) %>
         <td><%- include('../partials/status', { status: p.eb }) %></td>
+        <td><%- include('../partials/status', { status: p.sc[1] }) %></td>
       </tr>
     <% }) %>
     </tbody>
@@ -43,6 +45,7 @@
   </div>
   <p class="hint">Averages use submitted weeks only, across all days and times of day.</p>
   <p><strong><%= content.energyBalance.name %>:</strong> <%= ebSubmitted %> of <%= grid.length %> submitted.</p>
+  <% scSubmitted.forEach(function (x) { %><p><strong><%= content.screening.name %> before Session <%= x.s %>:</strong> <%= x.n %> of <%= grid.length %> submitted.</p><% }) %>
   <% if (chart) { %><%- chart %><% } %>
 </section>
 <%- include('../partials/foot') %>
