@@ -19,7 +19,7 @@
   <% ebDays.forEach(function (d, i) { var dd = eb.days[i]; %>
     <li><a class="eb-day <%= dd.count ? 'used' : '' %>" href="/tracker/energy/day/<%= i + 1 %>">
       <span class="eb-day-name"><%= time.formatDay(d) %></span>
-      <span class="hint"><% if (dd.count) { %><%= dd.activity.length %> activit<%= dd.activity.length === 1 ? 'y' : 'ies' %>, <%= dd.replenish.length %> replenishing. <%= EB.totalLabel %>: <%= dd.total %><% } else { %>Nothing yet<% } %></span>
+      <span class="hint"><% if (dd.count) { %><%= dd.activity.length %> activit<%= dd.activity.length === 1 ? 'y' : 'ies' %>, <%= dd.replenish.length %> replenishing. <%= Math.max(0, dd.spoonsLeft) %> of <%= EB.dailySpoons %> spoons left.<% } else { %>Nothing yet<% } %></span>
     </a></li>
   <% }) %>
   </ul>

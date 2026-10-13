@@ -242,3 +242,10 @@ details summary { cursor: pointer; font-weight: 600; min-height: 44px; display: 
 .eb-lines .notes, .notes { color: var(--muted); font-size: .9rem; }
 .eb-kind { margin: .75rem 0 .25rem; font-size: .95rem; color: var(--ink); }
 .eb-total { margin-top: .5rem; }
+.spoons { display: grid; grid-template-columns: repeat(6, 1fr); gap: .35rem .5rem; max-width: 22rem; margin: .25rem 0 .5rem; }
+@media (min-width: 34rem) { .spoons { grid-template-columns: repeat(12, 1fr); max-width: none; } }
+.spoon { width: 100%; height: 44px; }
+.spoon ellipse, .spoon path { fill: var(--teal); }
+.spoon.used ellipse, .spoon.used path { fill: #fff; stroke: #8a8580; stroke-width: 1.5; }
+.spoon .cross { stroke: #5a5a5a; stroke-width: 2; }
+.spoons-text { margin: 0 0 .5rem; }

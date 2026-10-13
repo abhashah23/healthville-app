@@ -51,6 +51,13 @@ Newest updates at the top of each section.
   examples from the "My Spoons" handout: watching a movie 1, bathing 2,
   cooking food 3, going to work or school 4.
 - The weekly tracker label now matches the handout: "What I was doing".
+- Weekly tracker scale words (Abha, yes): "0 = No fatigue",
+  "10 = Worst possible fatigue", from page 1 of the handout.
+- Week still starts on Thursday (session day), not Monday as on paper.
+- Today's spoons (Abha chose this from the My Spoons handout): each
+  Energy Balance day starts with 12 spoons. Activities use them,
+  replenishing gives them back, never more than 12 shown. If more are used
+  than 12, the app says how many more, without judgement.
 
 ## Choices made while building (Abha can change these)
 
@@ -69,8 +76,6 @@ Newest updates at the top of each section.
 
 ## Open questions
 
-- Energy Balance: the paper sheet says replenishing can "add a spoon". The
-  app treats replenishing points as taken off the day's total. Is that right?
 
 - Week 6 has no next session. For now it closes one week after Session 6, at
   1:00 PM ET. Is that right?

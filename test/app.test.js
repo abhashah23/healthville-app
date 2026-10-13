@@ -51,6 +51,11 @@ test('participant: autosave, required fields, submit once, no changes after', as
   // Without the CSRF token, saving is refused.
   await agent.post('/tracker/week/1/day/1/morning').send({ score: 4, activity: 'x' }).expect(403);
 
+  const form = await agent.get('/tracker/week/1/day/1/morning');
+  assert.match(form.text, /0 = No fatigue/);
+  assert.match(form.text, /10 = Worst possible fatigue/);
+  assert.match(form.text, /What I was doing/);
+
   const ok = await agent.post('/tracker/week/1/day/1/morning').set('X-CSRF-Token', csrf).send({ score: 4, activity: '' });
   assert.deepStrictEqual(ok.body, { ok: true, error: null });
 

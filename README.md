@@ -23,7 +23,8 @@ real participants.** See "Needs approval" below.
 - For each day, they add activities that used energy and replenishing
   activities that gave energy back, each with points (spoons) from 1 to 4
   and an optional comment.
-- The app shows a daily total: points used, minus points given back.
+- The app shows a daily total (points used, minus points given back) and
+  "Today's spoons": 12 spoons a day, as on the My Spoons handout.
 - Same rules as the weekly tracker: submit once, no changes after, closes when
   Session 3 starts, and staff see it once it is submitted or closed.
 
@@ -130,7 +131,7 @@ To deploy, see [docs/DEPLOY.md](docs/DEPLOY.md).
 **Energy Balance Blueprint (as a participant, in the week after Session 2)**
 1. On the home page, tap "Start the Energy Balance Blueprint".
 2. Choose a day. Add two activities and one replenishing activity.
-3. Check the daily total: points used minus points given back.
+3. Check the daily total and Today's spoons (12 minus used, plus given back).
 4. Change one line and remove another.
 5. Try to submit with nothing added. Then add an activity and submit.
 6. Check that nothing can be changed after submitting.

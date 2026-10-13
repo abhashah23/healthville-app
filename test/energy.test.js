@@ -36,9 +36,20 @@ test('energy balance: add lines, daily total is used minus given back', async ()
   assert.strictEqual(data.days[2].used, 5);
   assert.strictEqual(data.days[2].given, 4);
   assert.strictEqual(data.days[2].total, 1);
+  assert.strictEqual(data.days[2].spoonsLeft, 11, '12 spoons, 5 used, 4 given back');
+  assert.strictEqual(data.days[0].spoonsLeft, 12);
   assert.strictEqual(data.days[0].count, 0);
 
+  for (let i = 0; i < 4; i++) await energy.addLine(p.id, 4, 'activity', { activity: 'Busy', points: 4 });
+  await energy.addLine(p.id, 5, 'replenish', { activity: 'Rest', points: 3 });
+  const busy = await energy.getSheet(p.id);
+  assert.strictEqual(busy.days[4].spoonsLeft, -4, 'more used than the 12 available');
+  assert.strictEqual(busy.days[5].spoonsLeft, 12, 'never more than 12');
+  const busyPage = await agent.get('/tracker/energy/day/5');
+  assert.match(busyPage.text, /0 of 12 spoons left<\/strong>, and 4 more used than you started with/);
+
   const day = await agent.get('/tracker/energy/day/3');
+  assert.match(day.text, /11 of 12 spoons left/);
   assert.match(day.text, /Groceries/);
   assert.match(day.text, /Took a while/);
 });

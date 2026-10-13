@@ -13,7 +13,7 @@
     <h2>Your days</h2>
     <ul class="week-list">
     <% ebDays.forEach(function (d, i) { var dd = eb.days[i]; if (!dd.count) return; %>
-      <li><span><%= time.formatDay(d) %></span><span><%= EB.totalLabel %>: <strong><%= dd.total %></strong></span></li>
+      <li><span><%= time.formatDay(d) %></span><span><strong><%= Math.max(0, dd.spoonsLeft) %> of <%= EB.dailySpoons %></strong> spoons left</span></li>
     <% }) %>
     </ul>
     <p>Days with nothing entered are fine. Once you submit, you cannot change this. Your facilitator will then be able to see it.</p>

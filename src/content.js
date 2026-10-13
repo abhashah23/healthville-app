@@ -30,9 +30,9 @@ module.exports = {
       { key: 'evening', label: 'Evening' },
     ],
     scoreQuestion: 'Fatigue score',
-    // PLACEHOLDER pending Abha: words for each end of the 0 to 10 scale.
-    scoreLowLabel: '0',
-    scoreHighLabel: '10',
+    // Scale words from the Weekly Fatigue Tracker handout (page 1).
+    scoreLowLabel: '0 = No fatigue',
+    scoreHighLabel: '10 = Worst possible fatigue',
     // Column heading on the handout: "What I Was Doing".
     activityLabel: 'What I was doing',
     notesLabel: 'Notes or patterns (optional)',
@@ -69,6 +69,9 @@ module.exports = {
       },
     },
     commentLabel: 'Comments (optional)',
+    // "Today's Spoons" on the My Spoons handout: 12 spoons to cross off.
+    dailySpoons: 12,
+    spoonsHeading: "Today's spoons",
     totalLabel: 'Daily total',
     totalHint: 'Points used, minus points given back.',
     maxLines: { activity: 40, replenish: 20 },

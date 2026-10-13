@@ -1,0 +1,11 @@
+<% var EB = content.energyBalance; var total = EB.dailySpoons; var left = dayData.spoonsLeft; var shown = Math.max(0, left); %>
+<div class="spoons" aria-hidden="true">
+  <% for (var i = 0; i < total; i++) { var used = i >= shown; %>
+  <svg class="spoon <%= used ? 'used' : '' %>" viewBox="0 0 24 48" focusable="false">
+    <ellipse cx="12" cy="11" rx="8" ry="10"/>
+    <path d="M10 20 Q9 34 9.5 44 Q12 47 14.5 44 Q15 34 14 20 Z"/>
+    <% if (used) { %><line x1="3" y1="45" x2="21" y2="3" class="cross"/><% } %>
+  </svg>
+  <% } %>
+</div>
+<p class="spoons-text"><strong><%= shown %> of <%= total %> spoons left</strong><% if (left < 0) { %>, and <%= -left %> more used than you started with<% } %>.</p>

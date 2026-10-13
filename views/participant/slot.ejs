@@ -12,7 +12,7 @@
 
   <fieldset aria-describedby="score-hint band-key">
     <legend><%= content.tracker.scoreQuestion %></legend>
-    <p class="hint" id="score-hint">0 is the lowest, 10 is the highest.</p>
+    <p class="hint" id="score-hint"><%= content.tracker.scoreLowLabel %>. <%= content.tracker.scoreHighLabel %>.</p>
     <div class="scores">
       <% for (var s = 0; s <= 10; s++) { %>
         <input type="radio" id="score-<%= s %>" name="score" value="<%= s %>" <%= score === s ? 'checked' : '' %>>
